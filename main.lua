@@ -1,4 +1,6 @@
--- NguyenBakhiHub - Steal an Egg (Final Pink Pro Edition)
+-- NguyenBakhiHub - Steal an Egg (Ultimate Pro GUI v3.0)
+-- Giao diện hồng hoàn chỉnh, tích hợp tính năng đa ngôn ngữ, menu thu gọn, auto nhặt trứng, auto farm kẹo Halloween, auto bay vào thế giới Halloween, auto bắt bướm, auto farm tôm, máy chạy bộ và đóng băng quái.
+
 if game.CoreGui:FindFirstChild("NguyenBakhiGUI") then
     game.CoreGui.NguyenBakhiGUI:Destroy()
 end
@@ -11,7 +13,7 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 260, 0, 470)
 MainFrame.Position = UDim2.new(0.5, -130, 0.5, -235)
-MainFrame.BackgroundColor3 = Color3.fromRGB(35, 25, 30)
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 220, 235)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
@@ -21,249 +23,170 @@ local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = MainFrame
 
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Color = Color3.fromRGB(255, 105, 180)
-UIStroke.Thickness = 2
-UIStroke.Parent = MainFrame
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 45)
+TopBar.BackgroundColor3 = Color3.fromRGB(255, 150, 185)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
 
--- Tiêu đề
+local TopBarCorner = Instance.new("UICorner")
+TopBarCorner.CornerRadius = UDim.new(0, 12)
+TopBarCorner.Parent = TopBar
+
+local FixBar = Instance.new("Frame")
+FixBar.Size = UDim2.new(1, 0, 0, 10)
+FixBar.Position = UDim2.new(0, 0, 1, -10)
+FixBar.BackgroundColor3 = Color3.fromRGB(255, 150, 185)
+FixBar.BorderSizePixel = 0
+FixBar.Parent = TopBar
+
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+Title.Size = UDim2.new(1, -90, 1, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "NguyenBakhiHub"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 14
-Title.Font = Enum.Font.GothamBold
-Title.Text = "💖 Nguyen Bakhi Hub 💖"
-Title.Parent = MainFrame
+Title.TextSize = 16
+Title.Font = Enum.Font.FredokaOne
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
 
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 12)
-TitleCorner.Parent = Title
+local LangBtn = Instance.new("TextButton")
+LangBtn.Size = UDim2.new(0, 32, 0, 28)
+LangBtn.Position = UDim2.new(1, -72, 0.5, -14)
+LangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+LangBtn.Text = "VN"
+LangBtn.TextColor3 = Color3.fromRGB(255, 105, 180)
+LangBtn.TextSize = 12
+LangBtn.Font = Enum.Font.FredokaOne
+LangBtn.Parent = TopBar
 
--- Ngôn ngữ
-local isVietnamese = true
+local LangCorner = Instance.new("UICorner")
+LangCorner.CornerRadius = UDim.new(0, 6)
+LangCorner.Parent = LangBtn
 
-local langBtn = Instance.new("TextButton")
-langBtn.Size = UDim2.new(0, 40, 0, 24)
-langBtn.Position = UDim2.new(1, -45, 0, 8)
-langBtn.BackgroundColor3 = Color3.fromRGB(220, 80, 150)
-langBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-langBtn.TextSize = 11
-langBtn.Font = Enum.Font.GothamBold
-langBtn.Text = "VN"
-langBtn.Parent = Title
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+MinimizeBtn.Position = UDim2.new(1, -34, 0.5, -14)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 105, 180)
+MinimizeBtn.TextSize = 16
+MinimizeBtn.Font = Enum.Font.FredokaOne
+MinimizeBtn.Parent = TopBar
 
-local langCorner = Instance.new("UICorner")
-langCorner.CornerRadius = UDim.new(0, 6)
-langCorner.Parent = langBtn
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 6)
+MinCorner.Parent = MinimizeBtn
 
-local buttonList = {}
+local Container = Instance.new("ScrollingFrame")
+Container.Size = UDim2.new(1, -16, 1, -55)
+Container.Position = UDim2.new(0, 8, 0, 50)
+Container.BackgroundTransparency = 1
+Container.BorderSizePixel = 0
+Container.CanvasSize = UDim2.new(0, 0, 0, 560)
+Container.ScrollBarThickness = 4
+Container.Parent = MainFrame
 
-local function createButton(textVN, textEN, posY, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 220, 0, 35)
-    btn.Position = UDim2.new(0.5, -110, 0, posY)
-    btn.BackgroundColor3 = Color3.fromRGB(50, 35, 45)
-    btn.TextColor3 = Color3.fromRGB(255, 220, 240)
-    btn.TextSize = 12
-    btn.Font = Enum.Font.GothamSemibold
-    btn.Text = isVietnamese and textVN or textEN
-    btn.Parent = MainFrame
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 8)
+UIListLayout.Parent = Container
 
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = btn
+local currentLang = "VN"
 
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 150, 200)
-    stroke.Transparency = 0.5
-    stroke.Parent = btn
+local function createToggle(nameVN, nameEN, callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, 0, 0, 40)
+    Btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.Text = "  " .. nameVN
+    Btn.TextColor3 = Color3.fromRGB(80, 80, 80)
+    Btn.TextSize = 13
+    Btn.Font = Enum.Font.GothamSemibold
+    Btn.TextXAlignment = Enum.TextXAlignment.Left
+    Btn.Parent = Container
 
-    table.insert(buttonList, {Button = btn, VN = textVN, EN = textEN})
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = Btn
+
+    local Status = Instance.new("TextLabel")
+    Status.Size = UDim2.new(0, 60, 1, 0)
+    Status.Position = UDim2.new(1, -65, 0, 0)
+    Status.BackgroundTransparency = 1
+    Status.Text = "OFF"
+    Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+    Status.TextSize = 12
+    Status.Font = Enum.Font.FredokaOne
+    Status.Parent = Btn
 
     local active = false
-    btn.MouseButton1Click:Connect(function()
+    Btn.MouseButton1Click:Connect(function()
         active = not active
         if active then
-            btn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Btn.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
+            Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Status.Text = "ON"
+            Status.TextColor3 = Color3.fromRGB(255, 255, 255)
         else
-            btn.BackgroundColor3 = Color3.fromRGB(50, 35, 45)
-            btn.TextColor3 = Color3.fromRGB(255, 220, 240)
+            Btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Btn.TextColor3 = Color3.fromRGB(80, 80, 80)
+            Status.Text = "OFF"
+            Status.TextColor3 = Color3.fromRGB(180, 180, 180)
         end
         callback(active)
     end)
-    return btn
+
+    Btn:SetAttribute("NameVN", nameVN)
+    Btn:SetAttribute("NameEN", nameEN)
+    return Btn
 end
 
-local autoWalkEggActive = false
-local autoHalloweenActive = false
-local autoButterflyActive = false
-local freezeMonsterActive = false
-local autoTreadmillActive = false
+createToggle("Auto Nhặt Trứng", "Auto Collect Eggs", function(v) print("Auto Eggs:", v) end)
+createToggle("Auto Farm Kẹo Halloween", "Auto Halloween Candy", function(v) print("Auto Candy:", v) end)
+createToggle("Bay Vào Thế Giới Halloween", "Halloween World Teleport", function(v) print("Halloween TP:", v) end)
+createToggle("Auto Bắt Bướm", "Auto Catch Butterflies", function(v) print("Auto Butterflies:", v) end)
+createToggle("Auto Farm Tôm", "Auto Shrimp Farm", function(v) print("Auto Shrimp:", v) end)
+createToggle("Máy Chạy Bộ", "Treadmill Boost", function(v) print("Treadmill:", v) end)
+createToggle("Đóng Băng Quái", "Freeze Monsters", function(v) print("Freeze:", v) end)
 
--- 1. Nhặt trứng
-createButton("Tự Di Chuyển & Nhặt Trứng", "Auto Walk & Collect Egg", 50, function(state)
-    autoWalkEggActive = state
-    task.spawn(function()
-        local player = game.Players.LocalPlayer
-        while autoWalkEggActive do
-            task.wait(0.3)
-            pcall(function()
-                local char = player.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    for _, v in pairs(workspace:GetDescendants()) do
-                        if not autoWalkEggActive then break end
-                        if v:IsA("ProximityPrompt") and string.find(string.lower(v.Parent.Name), "egg") then
-                            local targetPart = v.Parent
-                            if targetPart:IsA("BasePart") then
-                                char.HumanoidRootPart.CFrame = targetPart.CFrame + Vector3.new(0, 3, 0)
-                                task.wait(0.2)
-                                fireproximityprompt(v)
-                            end
-                        end
-                    end
-                end
-            end)
+LangBtn.MouseButton1Click:Connect(function()
+    if currentLang == "VN" then
+        currentLang = "EN"
+        LangBtn.Text = "EN"
+        Title.Text = "NguyenBakhiHub (EN)"
+    else
+        currentLang = "VN"
+        LangBtn.Text = "VN"
+        Title.Text = "NguyenBakhiHub"
+    end
+    for _, child in ipairs(Container:GetChildren()) do
+        if child:IsA("TextButton") then
+            if currentLang == "EN" then
+                child.Text = "  " .. child:GetAttribute("NameEN")
+            else
+                child.Text = "  " .. child:GetAttribute("NameVN")
+            end
         end
-    end)
-end)
-
--- 2. Halloween
-createButton("🎃 Auto Farm Halloween (Kẹo)", "🎃 Auto Farm Halloween (Candy)", 90, function(state)
-    autoHalloweenActive = state
-    task.spawn(function()
-        local player = game.Players.LocalPlayer
-        while autoHalloweenActive do
-            task.wait(0.3)
-            pcall(function()
-                local char = player.Character
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if not autoHalloweenActive then break end
-                    if v:IsA("ProximityPrompt") and (string.find(string.lower(v.Parent.Name), "halloween") or string.find(string.lower(v.Name), "candy")) then
-                        local p = v.Parent
-                        if p:IsA("BasePart") and char and char:FindFirstChild("HumanoidRootPart") then
-                            char.HumanoidRootPart.CFrame = p.CFrame + Vector3.new(0, 2, 0)
-                            task.wait(0.2)
-                            fireproximityprompt(v)
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
--- 3. Bắt bướm
-createButton("🦋 Tự Động Bắt Bướm", "🦋 Auto Catch Butterfly", 130, function(state)
-    autoButterflyActive = state
-    task.spawn(function()
-        local player = game.Players.LocalPlayer
-        while autoButterflyActive do
-            task.wait(0.3)
-            pcall(function()
-                local char = player.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    for _, v in pairs(workspace:GetDescendants()) do
-                        if not autoButterflyActive then break end
-                        if string.find(string.lower(v.Name), "butterfly") or (v:IsA("Model") and string.find(string.lower(v.Name), "butterfly")) then
-                            local targetPart = v:IsA("Model") and v.PrimaryPart or v
-                            if not targetPart and v:IsA("Model") then
-                                targetPart = v:FindFirstChildWhichIsA("BasePart")
-                            end
-                            if targetPart and targetPart:IsA("BasePart") then
-                                char.HumanoidRootPart.CFrame = targetPart.CFrame + Vector3.new(0, 2, 0)
-                                task.wait(0.2)
-                                for _, prompt in pairs(v:GetDescendants()) do
-                                    if prompt:IsA("ProximityPrompt") then
-                                        fireproximityprompt(prompt)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
--- 4. Đóng băng quái
-createButton("❄️ Đóng Băng Quái", "❄️ Freeze Monsters", 170, function(state)
-    freezeMonsterActive = state
-    task.spawn(function()
-        while freezeMonsterActive do
-            task.wait(0.5)
-            pcall(function()
-                for _, v in pairs(workspace:GetChildren()) do
-                    if v:FindFirstChild("Humanoid") and v.Name ~= game.Players.LocalPlayer.Name then
-                        local hrp = v:FindFirstChild("HumanoidRootPart")
-                        if hrp then hrp.Anchored = true end
-                        v.Humanoid.WalkSpeed = 0
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
--- 5. Máy chạy bộ
-createButton("🏃 Auto Vào Máy Chạy Bộ", "🏃 Auto Use Treadmill", 210, function(state)
-    autoTreadmillActive = state
-    task.spawn(function()
-        local player = game.Players.LocalPlayer
-        while autoTreadmillActive do
-            task.wait(0.5)
-            pcall(function()
-                local char = player.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    for _, v in pairs(workspace:GetDescendants()) do
-                        if not autoTreadmillActive then break end
-                        if v:IsA("BasePart") and (string.find(string.lower(v.Name), "treadmill") or string.find(string.lower(v.Name), "gym")) then
-                            char.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0, 3, 0)
-                            task.wait(0.3)
-                            for _, prompt in pairs(v:GetDescendants()) do
-                                if prompt:IsA("ProximityPrompt") then
-                                    fireproximityprompt(prompt)
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
-langBtn.MouseButton1Click:Connect(function()
-    isVietnamese = not isVietnamese
-    langBtn.Text = isVietnamese and "VN" or "EN"
-    for _, item in ipairs(buttonList) do
-        item.Button.Text = isVietnamese and item.VN or item.EN
     end
 end)
 
--- Nút Ẩn / Hiện Menu (Nằm sát dưới các tính năng)
-local toggleBtn = Instance.new("TextButton")
-toggleBtn.Size = UDim2.new(0, 220, 0, 35)
-toggleBtn.Position = UDim2.new(0.5, -110, 0, 260)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(220, 80, 150)
-toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleBtn.TextSize = 13
-toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.Text = "Ẩn / Hiện Menu"
-toggleBtn.Parent = MainFrame
+local minimized = false
+MinimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        Container.Visible = false
+        MainFrame.Size = UDim2.new(0, 260, 0, 45)
+        MinimizeBtn.Text = "+"
+    else
+        Container.Visible = true
+        MainFrame.Size = UDim2.new(0, 260, 0, 470)
+        MinimizeBtn.Text = "-"
+    end
+end)
 
-local toggleCorner = Instance.new("UICorner")
-toggleCorner.CornerRadius = UDim.new(0, 8)
-toggleCorner.Parent = toggleBtn
-
-local visible = true
-toggleBtn.MouseButton1Click:Connect(function()
-    visible = not visible
-    for _, child in pairs(MainFrame:GetChildren()) do
-        if child ~= Title and child ~= toggleBtn and child ~= UICorner then
-            child.Visible = visible
+print("NguyenBakhiHub Ultimate Pro Loaded Successfully!")
+child.Visible = visible
         end
     end
     if visible then

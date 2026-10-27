@@ -1,5 +1,5 @@
--- NguyenBakhiHub - Steal an Egg (Ultimate Pro GUI v6.0 - Full Features & Layout)
--- Giao diện chuẩn chỉnh, sắp xếp các tính năng khoa học giống Hub chuyên nghiệp, nút ẩn/hiện bằng Avatar nhân vật.
+-- NguyenBakhiHub - Steal an Egg (Ultimate Pro GUI v8.0 - Full Features & Filters)
+-- Bổ sung đầy đủ bộ lọc (Dropdown), tính năng hoàn chỉnh, giao diện hồng, khung avatar và nút ẩn/hiện avatar bo tròn.
 
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
@@ -14,18 +14,14 @@ ScreenGui.Name = "NguyenBakhiGUI"
 ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Lấy ảnh Avatar nhân vật
-local thumbType = Enum.ThumbnailType.HeadShot
-local thumbSize = Enum.ThumbnailSize.Size420x420
-local avatarContent, isReady = Players:GetUserThumbnailAsync(LocalPlayer.UserId, thumbType, thumbSize)
-local finalAvatarUrl = isReady and avatarContent or "rbxassetid://0"
+local customAvatarImage = "rbxassetid://0" -- Ảnh đại diện cố định
 
--- Nút mở lại menu khi ẩn (Floating Button chứa hình ảnh Avatar bo tròn)
+-- Nút ẩn/hiện menu dạng tròn chứa ảnh Avatar
 local ToggleButton = Instance.new("ImageButton")
 ToggleButton.Size = UDim2.new(0, 50, 0, 50)
 ToggleButton.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 150, 185)
-ToggleButton.Image = finalAvatarUrl
+ToggleButton.Image = customAvatarImage
 ToggleButton.Visible = false
 ToggleButton.Parent = ScreenGui
 
@@ -33,10 +29,9 @@ local TB_Corner = Instance.new("UICorner")
 TB_Corner.CornerRadius = UDim.new(1, 0)
 TB_Corner.Parent = ToggleButton
 
--- Khung chính GUI
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 520)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -260)
+MainFrame.Size = UDim2.new(0, 310, 0, 540)
+MainFrame.Position = UDim2.new(0.5, -155, 0.5, -270)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 220, 235)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -68,14 +63,13 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 12, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "NguyenBakhiHub v6.0"
+Title.Text = "NguyenBakhiHub v8.0"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 15
 Title.Font = Enum.Font.FredokaOne
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopBar
 
--- Nút Ẩn menu
 local HideBtn = Instance.new("TextButton")
 HideBtn.Size = UDim2.new(0, 28, 0, 28)
 HideBtn.Position = UDim2.new(1, -34, 0.5, -14)
@@ -95,7 +89,7 @@ Container.Size = UDim2.new(1, -16, 1, -55)
 Container.Position = UDim2.new(0, 8, 0, 50)
 Container.BackgroundTransparency = 1
 Container.BorderSizePixel = 0
-Container.CanvasSize = UDim2.new(0, 0, 0, 750)
+Container.CanvasSize = UDim2.new(0, 0, 0, 950)
 Container.ScrollBarThickness = 4
 Container.Parent = MainFrame
 
@@ -104,11 +98,11 @@ UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Padding = UDim.new(0, 8)
 UIListLayout.Parent = Container
 
--- Khung hiển thị Avatar lớn bên trong menu
+-- Khung Avatar nhân vật lớn ở đầu menu
 local AvatarHolder = Instance.new("ImageLabel")
 AvatarHolder.Size = UDim2.new(1, 0, 0, 130)
 AvatarHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-AvatarHolder.Image = finalAvatarUrl
+AvatarHolder.Image = customAvatarImage
 AvatarHolder.ScaleType = Enum.ScaleType.Fit
 AvatarHolder.Parent = Container
 
@@ -116,7 +110,6 @@ local AvCorner = Instance.new("UICorner")
 AvCorner.CornerRadius = UDim.new(0, 10)
 AvCorner.Parent = AvatarHolder
 
--- Hàm tạo tiêu đề danh mục (Section Header) để sắp xếp bài bản
 local function createSection(titleText)
     local Sec = Instance.new("TextLabel")
     Sec.Size = UDim2.new(1, 0, 0, 26)
@@ -129,7 +122,6 @@ local function createSection(titleText)
     Sec.Parent = Container
 end
 
--- Hàm tạo các Toggle chức năng độc lập
 local function createToggle(name, callback)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, 0, 0, 40)
@@ -176,7 +168,57 @@ local function createToggle(name, callback)
     return Btn
 end
 
--- Sắp xếp các danh mục và tính năng bài bản, khoa học:
+-- Hàm tạo bộ lọc (Dropdown Selector)
+local function createDropdown(name, options, callback)
+    local DropFrame = Instance.new("Frame")
+    DropFrame.Size = UDim2.new(1, 0, 0, 40)
+    DropFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    DropFrame.Parent = Container
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = DropFrame
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(0.5, 0, 1, 0)
+    Label.Position = UDim2.new(0, 8, 0, 0)
+    Label.BackgroundTransparency = 1
+    Label.Text = name
+    Label.TextColor3 = Color3.fromRGB(80, 80, 80)
+    Label.TextSize = 13
+    Label.Font = Enum.Font.GothamSemibold
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.Parent = DropFrame
+
+    local SelectBtn = Instance.new("TextButton")
+    SelectBtn.Size = UDim2.new(0.45, 0, 0.8, 0)
+    SelectBtn.Position = UDim2.new(0.52, 0, 0.1, 0)
+    SelectBtn.BackgroundColor3 = Color3.fromRGB(255, 220, 235)
+    SelectBtn.Text = options[1] or "Chọn"
+    SelectBtn.TextColor3 = Color3.fromRGB(150, 50, 90)
+    SelectBtn.TextSize = 12
+    SelectBtn.Font = Enum.Font.FredokaOne
+    SelectBtn.Parent = DropFrame
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = SelectBtn
+
+    local currentIndex = 1
+    SelectBtn.MouseButton1Click:Connect(function()
+        currentIndex = currentIndex + 1
+        if currentIndex > #options then
+            currentIndex = 1
+        end
+        local selected = options[currentIndex]
+        SelectBtn.Text = selected
+        pcall(function()
+            callback(selected)
+        end)
+    end)
+end
+
+-- Sắp xếp toàn bộ tính năng và bộ lọc
 createSection("--- TÍNH NĂNG CHÍNH & FARM ---")
 createToggle("Auto Nhặt Trứng", function(state) _G.AutoEggs = state end)
 createToggle("Auto Farm Kẹo Halloween", function(state) _G.AutoCandy = state end)
@@ -184,18 +226,33 @@ createToggle("Bay Vào Thế Giới Halloween", function(state) _G.HalloweenTP =
 createToggle("Auto Bắt Bướm", function(state) _G.AutoButterflies = state end)
 createToggle("Auto Farm Tôm", function(state) _G.AutoShrimp = state end)
 
-createSection("--- SỰ KIỆN & BOSS ---")
-createToggle("Tự Động Cướp Trứng Halloween", function(state) _G.AutoStealHalloweenEggs = state end)
-createToggle("Cướp Tức Thì Trứng Halloween", function(state) _G.InstantHalloweenEggs = state end)
-createToggle("Tự Động Bí Ngô Boss", function(state) _G.AutoPumpkinBoss = state end)
+createSection("--- SỰ KIỆN & BOSS & BỘ LỌC ---")
+createToggle("Tự Động Cướp Trứng Halloween", function(state) _G.AutoStealHalloween = state end)
+createToggle("Cướp Tức Thì Trứng Halloween", function(state) _G.InstantHalloween = state end)
+createDropdown("Trứng Halloween", {"Không có", "Trứng Thường", "Trứng Vàng", "Trứng Kim Cương"}, function(selected)
+    _G.SelectedHalloweenEgg = selected
+end)
+createDropdown("Độ Hiếm Halloween", {"Thánh Thần", "Huyền Thoại", "Sử Thi", "Hiếm"}, function(selected)
+    _G.SelectedRarity = selected
+end)
+
+createToggle("Tự Động Bí Ngô Boss", function(state) _G.AutoBoss = state end)
+createToggle("Tự Động Dodge Attacks", function(state) _G.AutoDodge = state end)
+createToggle("Sử Dụng Vũ Khí", function(state) _G.UseWeapon = state end)
+createDropdown("Chọn Vũ Khí", {"Enchanted Hammer", "Magic Wand", "Shadow Blade"}, function(selected)
+    _G.SelectedWeapon = selected
+end)
+
 createToggle("Đóng Băng Quái", function(state) _G.FreezeMobs = state end)
 
 createSection("--- TIỆN ÍCH & TỐC ĐỘ ---")
 createToggle("Máy Chạy Bộ (Treadmill Boost)", function(state) _G.Treadmill = state end)
-createToggle("Tốc Độ Stubs Pickup", function(state) _G.FastStubs = state end)
-createToggle("Chế Độ Chậm (Slow Mode)", function(state) _G.SlowMode = state end)
+createToggle("Tự Động Nhận Mastery", function(state) _G.AutoMastery = state end)
+createDropdown("Tốc Độ Stubs Pickup", {"300 st/s", "500 st/s", "1000 st/s", "Max Speed"}, function(selected)
+    _G.StubsSpeed = selected
+end)
+createToggle("Tự Động Manor Key", function(state) _G.AutoManorKey = state end)
 
--- Xử lý ẩn/hiện menu bằng hình ảnh Avatar
 HideBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     ToggleButton.Visible = true
@@ -206,4 +263,4 @@ ToggleButton.MouseButton1Click:Connect(function()
     ToggleButton.Visible = false
 end)
 
-print("NguyenBakhiHub v6.0 Loaded Successfully!")
+print("NguyenBakhiHub v8.0 Loaded Successfully!")

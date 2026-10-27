@@ -1,5 +1,5 @@
 -- NguyenBakhiHub - Steal an Egg (Ultimate Pro GUI v3.0)
--- Giao diện hồng hoàn chỉnh, tích hợp tính năng đa ngôn ngữ, menu thu gọn, auto nhặt trứng, auto farm kẹo Halloween, auto bay vào thế giới Halloween, auto bắt bướm, auto farm tôm, máy chạy bộ và đóng băng quái.
+-- Giao diện hồng hoàn chỉnh, tích hợp tính năng đa ngôn ngữ, menu thu gọn, auto nhặt trứng, auto farm kẹo Halloween, auto bay vào thế giới Halloween, auto bắt bướm, auto farm tôm, máy chạy bộ, đóng băng quái và hiển thị ảnh Avatar.
 
 if game.CoreGui:FindFirstChild("NguyenBakhiGUI") then
     game.CoreGui.NguyenBakhiGUI:Destroy()
@@ -11,8 +11,8 @@ ScreenGui.Parent = game.CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 260, 0, 470)
-MainFrame.Position = UDim2.new(0.5, -130, 0.5, -235)
+MainFrame.Size = UDim2.new(0, 260, 0, 520)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -260)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 220, 235)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -80,11 +80,11 @@ MinCorner.CornerRadius = UDim.new(0, 6)
 MinCorner.Parent = MinimizeBtn
 
 local Container = Instance.new("ScrollingFrame")
-Container.Size = UDim2.new(1, -16, 1, -55)
+Container.Size = UDim2.new(1, -16, 1, -105)
 Container.Position = UDim2.new(0, 8, 0, 50)
 Container.BackgroundTransparency = 1
 Container.BorderSizePixel = 0
-Container.CanvasSize = UDim2.new(0, 0, 0, 560)
+Container.CanvasSize = UDim2.new(0, 0, 0, 420)
 Container.ScrollBarThickness = 4
 Container.Parent = MainFrame
 
@@ -92,6 +92,18 @@ local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Padding = UDim.new(0, 8)
 UIListLayout.Parent = Container
+
+-- Khung hiển thị hình ảnh Avatar nhân vật bên trong menu
+local ImageHolder = Instance.new("ImageLabel")
+ImageHolder.Size = UDim2.new(1, 0, 0, 110)
+ImageHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ImageHolder.Image = "rbxassetid://0" -- Bạn có thể thay đổi ID ảnh Roblox tại đây
+ImageHolder.ScaleType = Enum.ScaleType.Fit
+ImageHolder.Parent = Container
+
+local ImgCorner = Instance.new("UICorner")
+ImgCorner.CornerRadius = UDim.new(0, 8)
+ImgCorner.Parent = ImageHolder
 
 local currentLang = "VN"
 
@@ -180,20 +192,9 @@ MinimizeBtn.MouseButton1Click:Connect(function()
         MinimizeBtn.Text = "+"
     else
         Container.Visible = true
-        MainFrame.Size = UDim2.new(0, 260, 0, 470)
+        MainFrame.Size = UDim2.new(0, 260, 0, 520)
         MinimizeBtn.Text = "-"
     end
 end)
 
 print("NguyenBakhiHub Ultimate Pro Loaded Successfully!")
-child.Visible = visible
-        end
-    end
-    if visible then
-        MainFrame.Size = UDim2.new(0, 260, 0, 470)
-        toggleBtn.Position = UDim2.new(0.5, -110, 0, 260)
-    else
-        MainFrame.Size = UDim2.new(0, 260, 0, 40)
-        toggleBtn.Position = UDim2.new(0.5, -110, 0, 5)
-    end
-end)

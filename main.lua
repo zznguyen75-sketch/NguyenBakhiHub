@@ -1,9 +1,11 @@
--- NguyenBakhiHub - Steal an Egg (Ultimate Pro GUI v20.0 - Nguyenbakhi Edition)
--- Giao diện ngang cao cấp, đổi tên thành Nguyenbakhi, đầy đủ 100% tính năng cướp trứng, sự kiện, máy chạy bộ, đổi ngôn ngữ VN/EN, khung avatar và nút avatar tròn.
+-- Nguyenbakhi - Steal an Egg (Ultimate Pro GUI v23.0 - Nolag & Full Integration)
+-- Giao diện ngang cao cấp, tích hợp tính năng Nolag/mượt mà, Tab Ngôi Sao chứa bản vẽ tay, menu cố định.
 
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
 
 if CoreGui:FindFirstChild("NguyenBakhiGUI") then
     CoreGui.NguyenBakhiGUI:Destroy()
@@ -14,31 +16,12 @@ ScreenGui.Name = "NguyenBakhiGUI"
 ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local customAvatarImage = "rbxassetid://0" -- Ảnh đại diện cố định
 local currentLang = "VN"
 
--- Nút ẩn/hiện menu dạng tròn chứa ảnh Avatar ở góc màn hình
-local ToggleButton = Instance.new("ImageButton")
-ToggleButton.Size = UDim2.new(0, 50, 0, 50)
-ToggleButton.Position = UDim2.new(0, 20, 0.5, -25)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-ToggleButton.Image = customAvatarImage
-ToggleButton.Visible = false
-ToggleButton.Parent = ScreenGui
-
-local TB_Corner = Instance.new("UICorner")
-TB_Corner.CornerRadius = UDim.new(1, 0)
-TB_Corner.Parent = ToggleButton
-
-local TB_Stroke = Instance.new("UIStroke")
-TB_Stroke.Color = Color3.fromRGB(180, 100, 255)
-TB_Stroke.Thickness = 2
-TB_Stroke.Parent = ToggleButton
-
--- Giao diện Menu Ngang Cao Cấp (600px x 400px) chuẩn Chilli Hub V7
+-- Giao diện Menu Ngang Cao Cấp (620px x 420px) - Luôn hiển thị cố định
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 600, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+MainFrame.Size = UDim2.new(0, 620, 0, 420)
+MainFrame.Position = UDim2.new(0.5, -310, 0.5, -210)
 MainFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -76,10 +59,10 @@ Title.Font = Enum.Font.FredokaOne
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopBar
 
--- Ô Tìm kiếm trên TopBar
+-- Ô Tìm kiếm
 local SearchBox = Instance.new("TextBox")
-SearchBox.Size = UDim2.new(0, 170, 0, 26)
-SearchBox.Position = UDim2.new(1, -220, 0.5, -13)
+SearchBox.Size = UDim2.new(0, 180, 0, 26)
+SearchBox.Position = UDim2.new(1, -210, 0.5, -13)
 SearchBox.BackgroundColor3 = Color3.fromRGB(38, 38, 50)
 SearchBox.PlaceholderText = "🔍 Tìm kiếm tính năng..."
 SearchBox.Text = ""
@@ -93,10 +76,10 @@ local SearchCorner = Instance.new("UICorner")
 SearchCorner.CornerRadius = UDim.new(0, 6)
 SearchCorner.Parent = SearchBox
 
--- Nút đổi ngôn ngữ VN/EN riêng biệt
+-- Nút đổi ngôn ngữ VN/EN
 local LangBtn = Instance.new("TextButton")
 LangBtn.Size = UDim2.new(0, 32, 0, 26)
-LangBtn.Position = UDim2.new(1, -74, 0.5, -13)
+LangBtn.Position = UDim2.new(1, -64, 0.5, -13)
 LangBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 LangBtn.Text = "VN"
 LangBtn.TextColor3 = Color3.fromRGB(200, 150, 255)
@@ -107,21 +90,6 @@ LangBtn.Parent = TopBar
 local LangCorner = Instance.new("UICorner")
 LangCorner.CornerRadius = UDim.new(0, 6)
 LangCorner.Parent = LangBtn
-
--- Nút ẩn menu
-local HideBtn = Instance.new("TextButton")
-HideBtn.Size = UDim2.new(0, 26, 0, 26)
-HideBtn.Position = UDim2.new(1, -34, 0.5, -13)
-HideBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
-HideBtn.Text = "X"
-HideBtn.TextColor3 = Color3.fromRGB(255, 100, 150)
-HideBtn.TextSize = 12
-HideBtn.Font = Enum.Font.FredokaOne
-HideBtn.Parent = TopBar
-
-local HideCorner = Instance.new("UICorner")
-HideCorner.CornerRadius = UDim.new(0, 6)
-HideCorner.Parent = HideBtn
 
 -- Sidebar Dọc bên trái
 local Sidebar = Instance.new("ScrollingFrame")
@@ -150,22 +118,45 @@ ContentArea.Position = UDim2.new(0, 60, 0, 48)
 ContentArea.BackgroundTransparency = 1
 ContentArea.Parent = MainFrame
 
--- Tab 1: Cướp Trứng & Bộ Lọc
+-- Tab 1: Cướp Trứng (Chia 2 cột)
 local Tab1 = Instance.new("ScrollingFrame")
 Tab1.Size = UDim2.new(1, 0, 1, 0)
 Tab1.BackgroundTransparency = 1
 Tab1.BorderSizePixel = 0
-Tab1.CanvasSize = UDim2.new(0, 0, 0, 1100)
+Tab1.CanvasSize = UDim2.new(0, 0, 0, 500)
 Tab1.ScrollBarThickness = 4
 Tab1.Visible = true
 Tab1.Parent = ContentArea
 
-local Tab1Layout = Instance.new("UIListLayout")
-Tab1Layout.SortOrder = Enum.SortOrder.LayoutOrder
-Tab1Layout.Padding = UDim.new(0, 6)
-Tab1Layout.Parent = Tab1
+local ColLeft = Instance.new("ScrollingFrame")
+ColLeft.Size = UDim2.new(0.48, 0, 1, 0)
+ColLeft.Position = UDim2.new(0, 0, 0, 0)
+ColLeft.BackgroundTransparency = 1
+ColLeft.BorderSizePixel = 0
+ColLeft.CanvasSize = UDim2.new(0, 0, 0, 700)
+ColLeft.ScrollBarThickness = 3
+ColLeft.Parent = Tab1
 
--- Tab 2: Sự Kiện & Farm & Tiện Ích
+local ColLeftLayout = Instance.new("UIListLayout")
+ColLeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
+ColLeftLayout.Padding = UDim.new(0, 6)
+ColLeftLayout.Parent = ColLeft
+
+local ColRight = Instance.new("ScrollingFrame")
+ColRight.Size = UDim2.new(0.48, 0, 1, 0)
+ColRight.Position = UDim2.new(0.52, 0, 0, 0)
+ColRight.BackgroundTransparency = 1
+ColRight.BorderSizePixel = 0
+ColRight.CanvasSize = UDim2.new(0, 0, 0, 700)
+ColRight.ScrollBarThickness = 3
+ColRight.Parent = Tab1
+
+local ColRightLayout = Instance.new("UIListLayout")
+ColRightLayout.SortOrder = Enum.SortOrder.LayoutOrder
+ColRightLayout.Padding = UDim.new(0, 6)
+ColRightLayout.Parent = ColRight
+
+-- Tab 2: Phần Ngôi Sao (⭐) chứa toàn bộ chức năng bản vẽ tay và tính năng Nolag bổ sung
 local Tab2 = Instance.new("ScrollingFrame")
 Tab2.Size = UDim2.new(1, 0, 1, 0)
 Tab2.BackgroundTransparency = 1
@@ -202,16 +193,16 @@ end
 
 createSidebarTab("🏠", 1)
 createSidebarTab("🥚", 1)
-createSidebarTab("⭐", 2)
-createSidebarTab("⚙️", 2)
+createSidebarTab("⭐", 2) -- Tab Ngôi Sao chứa bản vẽ tay & Nolag
+createSidebarTab("⚙️", 1)
 
 local function createToggle(parentFrame, nameVN, nameEN, callback)
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(1, -5, 0, 38)
+    Btn.Size = UDim2.new(1, -5, 0, 34)
     Btn.BackgroundColor3 = Color3.fromRGB(32, 32, 44)
     Btn.Text = "  " .. nameVN
     Btn.TextColor3 = Color3.fromRGB(210, 210, 230)
-    Btn.TextSize = 12
+    Btn.TextSize = 11
     Btn.Font = Enum.Font.GothamSemibold
     Btn.TextXAlignment = Enum.TextXAlignment.Left
     Btn.Parent = parentFrame
@@ -221,8 +212,8 @@ local function createToggle(parentFrame, nameVN, nameEN, callback)
     Corner.Parent = Btn
 
     local Status = Instance.new("TextLabel")
-    Status.Size = UDim2.new(0, 50, 1, 0)
-    Status.Position = UDim2.new(1, -55, 0, 0)
+    Status.Size = UDim2.new(0, 45, 1, 0)
+    Status.Position = UDim2.new(1, -50, 0, 0)
     Status.BackgroundTransparency = 1
     Status.Text = "OFF"
     Status.TextColor3 = Color3.fromRGB(150, 150, 170)
@@ -255,7 +246,7 @@ end
 
 local function createDropdown(parentFrame, nameVN, nameEN, options, callback)
     local DropFrame = Instance.new("Frame")
-    DropFrame.Size = UDim2.new(1, -5, 0, 38)
+    DropFrame.Size = UDim2.new(1, -5, 0, 34)
     DropFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 44)
     DropFrame.Parent = parentFrame
 
@@ -264,12 +255,12 @@ local function createDropdown(parentFrame, nameVN, nameEN, options, callback)
     DropFrame.Parent = DropFrame
 
     local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(0.5, 0, 1, 0)
-    Label.Position = UDim2.new(0, 8, 0, 0)
+    Label.Size = UDim2.new(0.48, 0, 1, 0)
+    Label.Position = UDim2.new(0, 6, 0, 0)
     Label.BackgroundTransparency = 1
     Label.Text = nameVN
     Label.TextColor3 = Color3.fromRGB(210, 210, 230)
-    Label.TextSize = 12
+    Label.TextSize = 11
     Label.Font = Enum.Font.GothamSemibold
     Label.TextXAlignment = Enum.TextXAlignment.Left
     Label.Parent = DropFrame
@@ -277,8 +268,8 @@ local function createDropdown(parentFrame, nameVN, nameEN, options, callback)
     Label:SetAttribute("NameEN", nameEN)
 
     local SelectBtn = Instance.new("TextButton")
-    SelectBtn.Size = UDim2.new(0.45, 0, 0.8, 0)
-    SelectBtn.Position = UDim2.new(0.52, 0, 0.1, 0)
+    SelectBtn.Size = UDim2.new(0.48, 0, 0.8, 0)
+    SelectBtn.Position = UDim2.new(0.5, 0, 0.1, 0)
     SelectBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
     SelectBtn.Text = options[1] or "Chọn"
     SelectBtn.TextColor3 = Color3.fromRGB(255, 150, 220)
@@ -304,8 +295,8 @@ local function createDropdown(parentFrame, nameVN, nameEN, options, callback)
     end)
 end
 
--- ==================== TAB 1: CƯỚP TRỨNG & BỘ LỌC CHI TIẾT ====================
-createToggle(Tab1, "Tự động cướp", "Auto Steal", function(state)
+-- ==================== TAB 1: CƯỚP TRỨNG (2 CỘT MƯỢT MÀ) ====================
+createToggle(ColLeft, "Tự động cướp", "Auto Steal", function(state)
     _G.AutoSteal = state
     task.spawn(function()
         while _G.AutoSteal do
@@ -313,7 +304,6 @@ createToggle(Tab1, "Tự động cướp", "Auto Steal", function(state)
             pcall(function()
                 for _, v in pairs(workspace:GetDescendants()) do
                     if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0, 2, 0)
                         firetouchinterest(LocalPlayer.Character.HumanoidRootPart, v, 0)
                         firetouchinterest(LocalPlayer.Character.HumanoidRootPart, v, 1)
                     end
@@ -323,13 +313,34 @@ createToggle(Tab1, "Tự động cướp", "Auto Steal", function(state)
     end)
 end)
 
-createToggle(Tab1, "Di chuyển tới trứng", "Move to Egg", function(state) _G.MoveToEgg = state end)
-createDropdown(Tab1, "Dịch chuyển", "Teleport Method", {"Instant", "Quick steps", "Smooth"}, function(selected) _G.TeleportMethod = selected end)
-createDropdown(Tab1, "Khu vực dịch chuyển", "Teleport Area", {"Hoa Anh Đào", "Rừng Phù Phép", "Lords Pack"}, function(selected) _G.TeleportArea = selected end)
-createToggle(Tab1, "Cướp trứng thiếu trong Chỉ mục", "Steal Missing Index Eggs", function(state) _G.StealMissingIndex = state end)
-createToggle(Tab1, "Cướp từ người chơi khác", "Steal from Other Players", function(state) _G.StealOtherPlayers = state end)
+createToggle(ColLeft, "Di chuyển tới trứng", "Move to Egg", function(state)
+    _G.MoveToEgg = state
+    task.spawn(function()
+        while _G.MoveToEgg do
+            task.wait(0.5)
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local hrp = LocalPlayer.Character.HumanoidRootPart
+                        local dist = (v.Position - hrp.Position).Magnitude
+                        local tweenTime = math.clamp(dist / 50, 0.2, 1.5)
+                        local tween = TweenService:Create(hrp, TweenInfo.new(tweenTime, Enum.EasingStyle.Linear), {CFrame = v.CFrame + Vector3.new(0, 2, 0)})
+                        tween:Play()
+                        tween.Completed:Wait()
+                        break
+                    end
+                end
+            end)
+        end
+    end)
+end)
 
-createToggle(Tab1, "Chống vệ sĩ", "Anti Guard", function(state)
+createDropdown(ColLeft, "Dịch chuyển", "Teleport Method", {"Instant", "Quick steps", "Smooth"}, function(selected) _G.TeleportMethod = selected end)
+createDropdown(ColLeft, "Khu vực dịch chuyển", "Teleport Area", {"Hoa Anh Đào", "Rừng Phù Phép", "Lords Pack"}, function(selected) _G.TeleportArea = selected end)
+createToggle(ColLeft, "Cướp trứng thiếu Index", "Steal Missing Index", function(state) _G.StealMissingIndex = state end)
+createToggle(ColLeft, "Cướp từ người chơi khác", "Steal Other Players", function(state) _G.StealOtherPlayers = state end)
+
+createToggle(ColLeft, "Chống vệ sĩ", "Anti Guard", function(state)
     _G.AntiGuard = state
     task.spawn(function()
         while _G.AntiGuard do
@@ -345,18 +356,24 @@ createToggle(Tab1, "Chống vệ sĩ", "Anti Guard", function(state)
     end)
 end)
 
-createToggle(Tab1, "Thả trứng ở vùng an toàn", "Drop Eggs in Safe Zone", function(state) _G.SafeZoneDrop = state end)
-createDropdown(Tab1, "Khu vực (Bộ lọc)", "Area (Filter)", {"Rừng Phù Phép", "Hoa Anh Đào", "Lords Pack", "Khu Bướm", "Khu Hổ", "Khu Gorilla"}, function(selected) _G.FilterArea = selected end)
-createDropdown(Tab1, "Ưu tiên cướp", "Priority Steal", {"Độ hiếm cao nhất", "Giá trị cao nhất", "Gần nhất", "Secret", "Extreme", "Divine"}, function(selected) _G.PrioritySteal = selected end)
-createDropdown(Tab1, "Đột biến", "Mutation", {"Không có", "Shiny", "Rainbow"}, function(selected) _G.MutationFilter = selected end)
-createDropdown(Tab1, "Độ hiếm", "Rarity", {"Thánh Thần", "Huyền Thoại", "Sử Thi", "Hiếm"}, function(selected) _G.RarityFilter = selected end)
-createDropdown(Tab1, "Chỉ những trứng này", "Only These Eggs", {"Không có", "Trứng Vàng", "Trứng Kim Cương"}, function(selected) _G.OnlyTheseEggs = selected end)
-createToggle(Tab1, "Giá trị tối thiểu/s", "Min Value/s", function(state) _G.MinValueRate = state end)
-createToggle(Tab1, "Bán trứng rẻ nhất khi đầy túi", "Sell Cheapest When Full", function(state) _G.SellCheapest = state end)
-createToggle(Tab1, "Chỉ dưới mức/s", "Only Below Rate", function(state) _G.OnlyBelowRate = state end)
+createToggle(ColLeft, "Thả trứng vùng an toàn", "Drop Safe Zone", function(state) _G.SafeZoneDrop = state end)
+
+-- CỘT PHẢI TAB 1
+createDropdown(ColRight, "Khu vực (Bộ lọc)", "Area (Filter)", {"Rừng Phù Phép", "Hoa Anh Đào", "Lords Pack", "Khu Bướm", "Khu Hổ", "Khu Gorilla"}, function(selected) _G.FilterArea = selected end)
+createDropdown(ColRight, "Ưu tiên cướp", "Priority Steal", {"Độ hiếm cao nhất", "Giá trị cao nhất", "Gần nhất", "Secret", "Extreme", "Divine"}, function(selected) _G.PrioritySteal = selected end)
+createDropdown(ColRight, "Đột biến", "Mutation", {"Không có", "Shiny", "Rainbow"}, function(selected) _G.MutationFilter = selected end)
+createDropdown(ColRight, "Độ hiếm", "Rarity", {"Thánh Thần", "Huyền Thoại", "Sử Thi", "Hiếm"}, function(selected) _G.RarityFilter = selected end)
+createDropdown(ColRight, "Chỉ những trứng này", "Only These Eggs", {"Không có", "Trứng Vàng", "Trứng Kim Cương"}, function(selected) _G.OnlyTheseEggs = selected end)
+createToggle(ColRight, "Giá trị tối thiểu/s", "Min Value/s", function(state) _G.MinValueRate = state end)
+createToggle(ColRight, "Bán rẻ khi đầy túi", "Sell Cheapest", function(state) _G.SellCheapest = state end)
+createToggle(ColRight, "Chỉ dưới mức/s", "Only Below Rate", function(state) _G.OnlyBelowRate = state end)
 
 
--- ==================== TAB 2: SỰ KIỆN & FARM & TIỆN ÍCH ====================
+-- ==================== TAB 2 (⭐): PHẦN NGÔI SAO - BẢN VẼ TAY & NOLAG ====================
+createDropdown(Tab2, "Steal Egg (Bộ lọc)", "Steal Egg (Filter)", {"Secret", "Extreme", "Divine"}, function(selected)
+    _G.StarStealEggFilter = selected
+end)
+
 createToggle(Tab2, "Tự bay vào Halloween", "Auto Fly to Halloween", function(state)
     _G.AutoFlyHalloween = state
     task.spawn(function()
@@ -390,9 +407,9 @@ createToggle(Tab2, "Farm Boss Mới", "Farm New Boss", function(state)
 end)
 
 createToggle(Tab2, "Nhặt trứng (Độ lọc)", "Collect Eggs (Rarity Filter)", function(state) _G.RarityFilterEgg = state end)
-createToggle(Tab2, "Tram sự kiện quái Halloween", "Halloween Event Mobs Station", function(state) _G.HalloweenEventMobs = state end)
+createToggle(Tab2, "Trạm sự kiện quái Halloween", "Halloween Event Mobs Station", function(state) _G.HalloweenEventMobs = state end)
 
-createToggle(Tab2, "Tram ma ở Tân Hóa", "Tan Hoa Ghost Station", function(state)
+createToggle(Tab2, "Trạm ma ở Tân Hóa", "Tan Hoa Ghost Station", function(state)
     _G.TanHoaGhostStation = state
     task.spawn(function()
         while _G.TanHoaGhostStation do
@@ -446,6 +463,27 @@ createToggle(Tab2, "Tự động máy chạy bộ", "Auto Treadmill", function(s
     end)
 end)
 
+-- Bổ sung tính năng Nolag / Giảm lag tối ưu từ script ngoài
+createToggle(Tab2, "Chế độ Không Lag (No-Lag Mode)", "No-Lag Mode", function(state)
+    _G.NoLagMode = state
+    task.spawn(function()
+        if _G.NoLagMode then
+            pcall(function()
+                Lighting.GlobalShadows = false
+                Lighting.Brightness = 2
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v:IsA("BasePart") then
+                        v.Material = Enum.Material.SmoothPlastic
+                        v.Reflectance = 0
+                    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+                        v.Enabled = false
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
 -- Xử lý chuyển đổi ngôn ngữ VN/EN
 LangBtn.MouseButton1Click:Connect(function()
     if currentLang == "VN" then
@@ -456,7 +494,7 @@ LangBtn.MouseButton1Click:Connect(function()
         LangBtn.Text = "VN"
     end
 
-    for _, container in ipairs({Tab1, Tab2}) do
+    for _, container in ipairs({ColLeft, ColRight, Tab2}) do
         for _, child in ipairs(container:GetChildren()) do
             if child:IsA("TextButton") and child:GetAttribute("NameVN") then
                 if currentLang == "EN" then
@@ -468,7 +506,7 @@ LangBtn.MouseButton1Click:Connect(function()
                 local lbl = child:FindFirstChildOfClass("TextLabel")
                 if lbl and lbl:GetAttribute("NameVN") then
                     if currentLang == "EN" then
-                        lbl.Text = lbl:GetAttribute("NameVN")
+                        lbl.Text = lbl:GetAttribute("NameEN")
                     else
                         lbl.Text = lbl:GetAttribute("NameVN")
                     end
@@ -478,14 +516,4 @@ LangBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-HideBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-    ToggleButton.Visible = true
-end)
-
-ToggleButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = true
-    ToggleButton.Visible = false
-end)
-
-print("Nguyenbakhi Hub Loaded Successfully!")
+print("Nguyenbakhi v23.0 Nolag Integrated Successfully!")

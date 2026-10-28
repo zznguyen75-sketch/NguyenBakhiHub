@@ -1,8 +1,7 @@
--- Nguyenbakhi - Steal an Egg (Ultimate Pro GUI v27.0 - Direct Code Execution)
+-- Nguyenbakhi - Steal an Egg (Ultimate Pro GUI v30.0 - Full Features & Halloween Boss/Candy/Ship)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 
 if CoreGui:FindFirstChild("NguyenBakhiGUI") then
@@ -110,19 +109,19 @@ ContentArea.Position = UDim2.new(0, 60, 0, 50)
 ContentArea.BackgroundTransparency = 1
 ContentArea.Parent = MainFrame
 
-local Tab1 = Instance.new("Frame")
+local Tab1 = Instance.new("ScrollingFrame")
 Tab1.Size = UDim2.new(1, 0, 1, 0)
 Tab1.BackgroundTransparency = 1
+Tab1.BorderSizePixel = 0
+Tab1.CanvasSize = UDim2.new(0, 0, 0, 700)
+Tab1.ScrollBarThickness = 4
 Tab1.Visible = true
 Tab1.Parent = ContentArea
 
-local ColLeft = Instance.new("ScrollingFrame")
-ColLeft.Size = UDim2.new(0.48, 0, 1, 0)
+local ColLeft = Instance.new("Frame")
+ColLeft.Size = UDim2.new(0.48, 0, 0, 650)
 ColLeft.Position = UDim2.new(0, 0, 0, 0)
 ColLeft.BackgroundTransparency = 1
-ColLeft.BorderSizePixel = 0
-ColLeft.CanvasSize = UDim2.new(0, 0, 0, 600)
-ColLeft.ScrollBarThickness = 3
 ColLeft.Parent = Tab1
 
 local ColLeftLayout = Instance.new("UIListLayout")
@@ -130,13 +129,10 @@ ColLeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
 ColLeftLayout.Padding = UDim.new(0, 6)
 ColLeftLayout.Parent = ColLeft
 
-local ColRight = Instance.new("ScrollingFrame")
-ColRight.Size = UDim2.new(0.48, 0, 1, 0)
+local ColRight = Instance.new("Frame")
+ColRight.Size = UDim2.new(0.48, 0, 0, 650)
 ColRight.Position = UDim2.new(0.52, 0, 0, 0)
 ColRight.BackgroundTransparency = 1
-ColRight.BorderSizePixel = 0
-ColRight.CanvasSize = UDim2.new(0, 0, 0, 600)
-ColRight.ScrollBarThickness = 3
 ColRight.Parent = Tab1
 
 local ColRightLayout = Instance.new("UIListLayout")
@@ -148,7 +144,7 @@ local Tab2 = Instance.new("ScrollingFrame")
 Tab2.Size = UDim2.new(1, 0, 1, 0)
 Tab2.BackgroundTransparency = 1
 Tab2.BorderSizePixel = 0
-Tab2.CanvasSize = UDim2.new(0, 0, 0, 800)
+Tab2.CanvasSize = UDim2.new(0, 0, 0, 1200)
 Tab2.ScrollBarThickness = 4
 Tab2.Visible = false
 Tab2.Parent = ContentArea
@@ -173,7 +169,7 @@ local function createSidebarTab(iconText, targetTab)
     Corner.Parent = TabBtn
 
     TabBtn.MouseButton1Click:Connect(function()
-        Tab1.Visible = (targetTab == 1)
+        Tab1.Visible = (targetTab == 1 or targetTab == 3)
         Tab2.Visible = (targetTab == 2)
     end)
 end
@@ -185,7 +181,7 @@ createSidebarTab("⚙️", 1)
 
 local function createToggle(parentFrame, nameVN, nameEN, callback)
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(1, -5, 0, 32)
+    Btn.Size = UDim2.new(1, 0, 0, 32)
     Btn.BackgroundColor3 = Color3.fromRGB(32, 32, 44)
     Btn.Text = "  " .. nameVN
     Btn.TextColor3 = Color3.fromRGB(210, 210, 230)
@@ -231,7 +227,7 @@ end
 
 local function createDropdown(parentFrame, nameVN, nameEN, options, callback)
     local DropFrame = Instance.new("Frame")
-    DropFrame.Size = UDim2.new(1, -5, 0, 32)
+    DropFrame.Size = UDim2.new(1, 0, 0, 32)
     DropFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 44)
     DropFrame.Parent = parentFrame
 
@@ -276,6 +272,7 @@ local function createDropdown(parentFrame, nameVN, nameEN, options, callback)
     end)
 end
 
+-- CỘT TRÁI TAB 1
 createToggle(ColLeft, "Tự động cướp", "Auto Steal", function(state)
     _G.AutoSteal = state
     task.spawn(function()
@@ -338,6 +335,7 @@ createToggle(ColLeft, "Chống vệ sĩ", "Anti Guard", function(state)
 end)
 createToggle(ColLeft, "Thả trứng vùng an toàn", "Drop Safe Zone", function(state) _G.SafeZoneDrop = state end)
 
+-- CỘT PHẢI TAB 1
 createDropdown(ColRight, "Khu vực (Bộ lọc)", "Area (Filter)", {"Rừng Phù Phép", "Hoa Anh Đào", "Lords Pack", "Khu Bướm", "Khu Hổ", "Khu Gorilla"}, function(selected) _G.FilterArea = selected end)
 createDropdown(ColRight, "Ưu tiên cướp", "Priority Steal", {"Độ hiếm cao nhất", "Giá trị cao nhất", "Gần nhất", "Secret", "Extreme", "Divine"}, function(selected) _G.PrioritySteal = selected end)
 createDropdown(ColRight, "Đột biến", "Mutation", {"Không có", "Shiny", "Rainbow"}, function(selected) _G.MutationFilter = selected end)
@@ -347,7 +345,110 @@ createToggle(ColRight, "Giá trị tối thiểu/s", "Min Value/s", function(sta
 createToggle(ColRight, "Bán rẻ khi đầy túi", "Sell Cheapest", function(state) _G.SellCheapest = state end)
 createToggle(ColRight, "Chỉ dưới mức/s", "Only Below Rate", function(state) _G.OnlyBelowRate = state end)
 
+-- TAB 2 (⭐): NGÔI SAO
 createDropdown(Tab2, "Steal Egg (Bộ lọc)", "Steal Egg (Filter)", {"Secret", "Extreme", "Divine"}, function(selected) _G.StarStealEggFilter = selected end)
+
+createToggle(Tab2, "Tự động vào máy trên bục", "Auto Machine on Podium", function(state)
+    _G.AutoPodiumMachine = state
+    task.spawn(function()
+        while _G.AutoPodiumMachine do
+            task.wait(0.5)
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if (v.Name:lower():find("podium") or v.Name:lower():find("buc") or v.Name:lower():find("may")) and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local prompt = v:FindFirstChildWhichIsA("ProximityPrompt", true)
+                        if prompt then fireproximityprompt(prompt) else LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0, 3, 0) end
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+createToggle(Tab2, "Tự động Halloween", "Auto Halloween", function(state)
+    _G.AutoHalloween = state
+    task.spawn(function()
+        while _G.AutoHalloween do
+            task.wait(0.5)
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v.Name:lower():find("halloween") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0, 3, 0)
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+createToggle(Tab2, "Tự động farm kẹo", "Auto Farm Candy", function(state)
+    _G.AutoFarmCandy = state
+    task.spawn(function()
+        while _G.AutoFarmCandy do
+            task.wait(0.3)
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if (v.Name:lower():find("candy") or v.Name:lower():find("keo")) and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, v, 0)
+                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, v, 1)
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+createToggle(Tab2, "Tự động farm tàu", "Auto Farm Ship", function(state)
+    _G.AutoFarmShip = state
+    task.spawn(function()
+        while _G.AutoFarmShip do
+            task.wait(0.5)
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if (v.Name:lower():find("ship") or v.Name:lower():find("boat") or v.Name:lower():find("tau")) and v:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame + Vector3.new(0, 0, 4)
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+createToggle(Tab2, "Tự động farm sự kiện Halloween", "Auto Halloween Event Farm", function(state)
+    _G.AutoHalloweenEvent = state
+    task.spawn(function()
+        while _G.AutoHalloweenEvent do
+            task.wait(0.5)
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if (v.Name:lower():find("event") or v.Name:lower():find("bi ngo") or v.Name:lower():find("halloween")) and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, v, 0)
+                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, v, 1)
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+createToggle(Tab2, "Tự động đánh boss Halloween", "Auto Halloween Boss", function(state)
+    _G.AutoHalloweenBoss = state
+    task.spawn(function()
+        while _G.AutoHalloweenBoss do
+            task.wait(0.5)
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if (v.Name:lower():find("boss") or v.Name:lower():find("halloween boss")) and v:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame + Vector3.new(0, 0, 5)
+                        local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                        if tool then tool:Activate() end
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
 createToggle(Tab2, "Tự bay vào Halloween", "Auto Fly to Halloween", function(state)
     _G.AutoFlyHalloween = state
     task.spawn(function()
@@ -363,23 +464,7 @@ createToggle(Tab2, "Tự bay vào Halloween", "Auto Fly to Halloween", function(
         end
     end)
 end)
-createToggle(Tab2, "Farm Boss Mới", "Farm New Boss", function(state)
-    _G.FarmNewBoss = state
-    task.spawn(function()
-        while _G.FarmNewBoss do
-            task.wait(0.5)
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if (v.Name:lower():find("boss") or v.Name:lower():find("bi ngo")) and v:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame + Vector3.new(0, 0, 4)
-                    end
-                end
-            end)
-        end
-    end)
-end)
-createToggle(Tab2, "Nhặt trứng (Độ lọc)", "Collect Eggs (Rarity Filter)", function(state) _G.RarityFilterEgg = state end)
-createToggle(Tab2, "Trạm sự kiện quái Halloween", "Halloween Event Mobs Station", function(state) _G.HalloweenEventMobs = state end)
+
 createToggle(Tab2, "Trạm ma ở Tân Hóa", "Tan Hoa Ghost Station", function(state)
     _G.TanHoaGhostStation = state
     task.spawn(function()
@@ -397,6 +482,7 @@ createToggle(Tab2, "Trạm ma ở Tân Hóa", "Tan Hoa Ghost Station", function(
         end
     end)
 end)
+
 createToggle(Tab2, "Tự động đi câu", "Auto Fishing", function(state)
     _G.AutoFishing = state
     task.spawn(function()
@@ -406,75 +492,4 @@ createToggle(Tab2, "Tự động đi câu", "Auto Fishing", function(state)
                 local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
                 if tool and tool.Name:lower():find("fish") then tool:Activate() end
             end)
-        end
-    end)
-end)
-createToggle(Tab2, "Tượng đổi màu sơn mới", "New Paint Statue", function(state) _G.NewPaintStatue = state end)
-createToggle(Tab2, "Tự động máy chạy bộ", "Auto Treadmill", function(state)
-    _G.AutoTreadmill = state
-    task.spawn(function()
-        while _G.AutoTreadmill do
-            task.wait(0.5)
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v.Name:lower():find("treadmill") or v.Name:lower():find("may chay bo") then
-                        local prompt = v:FindFirstChildWhichIsA("ProximityPrompt", true)
-                        if prompt then fireproximityprompt(prompt) end
-                    end
-                end
-            end)
-        end
-    end)
-end)
-createToggle(Tab2, "Chế độ Không Lag (No-Lag Mode)", "No-Lag Mode", function(state)
-    _G.NoLagMode = state
-    task.spawn(function()
-        if _G.NoLagMode then
-            pcall(function()
-                Lighting.GlobalShadows = false
-                Lighting.Brightness = 2
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v:IsA("BasePart") then
-                        v.Material = Enum.Material.SmoothPlastic
-                        v.Reflectance = 0
-                    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-                        v.Enabled = false
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
-LangBtn.MouseButton1Click:Connect(function()
-    if currentLang == "VN" then
-        currentLang = "EN"
-        LangBtn.Text = "EN"
-    else
-        currentLang = "VN"
-        LangBtn.Text = "VN"
-    end
-
-    for _, container in ipairs({ColLeft, ColRight, Tab2}) do
-        for _, child in ipairs(container:GetChildren()) do
-            if child:IsA("TextButton") and child:GetAttribute("NameVN") then
-                if currentLang == "EN" then
-                    child.Text = "  " .. child:GetAttribute("NameEN")
-                else
-                    child.Text = "  " .. child:GetAttribute("NameVN")
-                end
-            elseif child:IsA("Frame") then
-                local lbl = child:FindFirstChildOfClass("TextLabel")
-                if lbl and lbl:GetAttribute("NameVN") then
-                    if currentLang == "EN" then
-                        lbl.Text = lbl:GetAttribute("NameEN")
-                    else
-                        lbl.Text = lbl:GetAttribute("NameVN")
-                    end
-                end
-            end
-        end
-    end
-end)
-
-print("Chilli Hub V7 (Nguyenbakhi) v27.0 Loaded Successfully!")
+        

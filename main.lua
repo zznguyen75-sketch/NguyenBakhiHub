@@ -1,549 +1,551 @@
--- Nguyenbakhi - Steal an Egg (Ultimate Pro GUI v35.0 - Fixed Fling / Teleport Glitch Bug)
-local CoreGui = game:GetService("CoreGui")
+-- Nguyen BaKhí Hub (Steal an Egg - v81.0 Ultimate Anti-Freeze & Venyx UI Edition)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local Lighting = game:GetService("Lighting")
+local CoreGui = game:GetService("CoreGui")
+local Workspace = game:GetService("Workspace")
 
-if CoreGui:FindFirstChild("NguyenBakhiGUI") then
-    CoreGui.NguyenBakhiGUI:Destroy()
-end
+pcall(function()
+    if CoreGui:FindFirstChild("NguyenBaKhiVenture") then
+        CoreGui.NguyenBaKhiVenture:Destroy()
+    end
+    if LocalPlayer.PlayerGui:FindFirstChild("NguyenBaKhiVenture") then
+        LocalPlayer.PlayerGui.NguyenBaKhiVenture:Destroy()
+    end
+end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "NguyenBakhiGUI"
-ScreenGui.Parent = CoreGui
+ScreenGui.Name = "NguyenBaKhiVenture"
+local successGui = pcall(function()
+    ScreenGui.Parent = CoreGui
+end)
+if not successGui then
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+end
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
 
--- 1. BẢNG CHỌN NGÔN NGỮ BAN ĐẦU
+-- NÚT AVATAR TRÒN THU GỌN
+local FloatAvatarBtn = Instance.new("ImageButton")
+FloatAvatarBtn.Size = UDim2.new(0, 42, 0, 42)
+FloatAvatarBtn.Position = UDim2.new(0, 15, 0, 130)
+FloatAvatarBtn.BackgroundColor3 = Color3.fromRGB(25, 12, 20)
+FloatAvatarBtn.Visible = false
+FloatAvatarBtn.Draggable = true
+FloatAvatarBtn.ZIndex = 50
+FloatAvatarBtn.Parent = ScreenGui
+Instance.new("UICorner", FloatAvatarBtn).CornerRadius = UDim.new(1, 0)
+
+local AvatarStroke = Instance.new("UIStroke")
+AvatarStroke.Color = Color3.fromRGB(255, 110, 190)
+AvatarStroke.Thickness = 2
+AvatarStroke.Parent = FloatAvatarBtn
+
+pcall(function()
+    local thumbSuccess, content = pcall(function()
+        return Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+    end)
+    FloatAvatarBtn.Image = thumbSuccess and content or "rbxassetid://6031094678"
+end)
+
+-- BẢNG CHỌN NGÔN NGỮ BAN ĐẦU
 local LangModal = Instance.new("Frame")
-LangModal.Size = UDim2.new(0, 420, 0, 180)
-LangModal.Position = UDim2.new(0.5, -210, 0.5, -90)
-LangModal.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+LangModal.Size = UDim2.new(0, 360, 0, 200)
+LangModal.Position = UDim2.new(0.5, -180, 0.5, -100)
+LangModal.BackgroundColor3 = Color3.fromRGB(18, 10, 15)
+LangModal.BackgroundTransparency = 0.05
+LangModal.Active = true
+LangModal.Draggable = true
+LangModal.ZIndex = 20
 LangModal.Parent = ScreenGui
+
 Instance.new("UICorner", LangModal).CornerRadius = UDim.new(0, 12)
 local LangStroke = Instance.new("UIStroke")
-LangStroke.Color = Color3.fromRGB(255, 100, 180)
-LangStroke.Thickness = 1.8
+LangStroke.Thickness = 2.5
 LangStroke.Parent = LangModal
 
-local ModalTitle = Instance.new("TextLabel")
-ModalTitle.Size = UDim2.new(1, 0, 0, 40)
-ModalTitle.BackgroundTransparency = 1
-ModalTitle.Text = "⚡ NO-LAG HUB (120 FPS)"
-ModalTitle.TextColor3 = Color3.fromRGB(255, 220, 240)
-ModalTitle.TextSize = 14
-ModalTitle.Font = Enum.Font.FredokaOne
-ModalTitle.Parent = LangModal
+task.spawn(function()
+    local hue = 0
+    while LangModal and LangModal.Parent do
+        hue = (hue + 0.005) % 1
+        LangStroke.Color = Color3.fromHSV(hue, 0.8, 1)
+        task.wait(0.03)
+    end
+end)
 
-local VNBtn = Instance.new("TextButton")
-VNBtn.Size = UDim2.new(0, 180, 0, 50)
-VNBtn.Position = UDim2.new(0, 20, 0, 70)
-VNBtn.BackgroundColor3 = Color3.fromRGB(50, 90, 200)
-VNBtn.Text = "🇻🇳 TIẾNG VIỆT"
-VNBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-VNBtn.TextSize = 13
-VNBtn.Font = Enum.Font.FredokaOne
-VNBtn.Parent = LangModal
-Instance.new("UICorner", VNBtn).CornerRadius = UDim.new(0, 8)
+local LangTitle = Instance.new("TextLabel")
+LangTitle.Size = UDim2.new(1, 0, 0, 35)
+LangTitle.Position = UDim2.new(0, 0, 0, 6)
+LangTitle.BackgroundTransparency = 1
+LangTitle.Text = "👑 Nguyen BaKhí Hub"
+LangTitle.TextColor3 = Color3.fromRGB(255, 130, 200)
+LangTitle.TextSize = 13
+LangTitle.Font = Enum.Font.FredokaOne
+LangTitle.ZIndex = 21
+LangTitle.Parent = LangModal
 
-local ENBtn = Instance.new("TextButton")
-ENBtn.Size = UDim2.new(0, 180, 0, 50)
-ENBtn.Position = UDim2.new(1, -200, 0, 70)
-ENBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-ENBtn.Text = "🌐 ENGLISH"
-ENBtn.TextColor3 = Color3.fromRGB(200, 200, 220)
-ENBtn.TextSize = 13
-ENBtn.Font = Enum.Font.FredokaOne
-ENBtn.Parent = LangModal
-Instance.new("UICorner", ENBtn).CornerRadius = UDim.new(0, 8)
+local LangSub = Instance.new("TextLabel")
+LangSub.Size = UDim2.new(1, -20, 0, 24)
+LangSub.Position = UDim2.new(0, 10, 0, 38)
+LangSub.BackgroundTransparency = 1
+LangSub.Text = "Vui lòng chọn ngôn ngữ / Please select language:"
+LangSub.TextColor3 = Color3.fromRGB(230, 210, 220)
+LangSub.TextSize = 8
+LangSub.Font = Enum.Font.GothamSemibold
+LangSub.ZIndex = 21
+LangSub.Parent = LangModal
 
+local function createLangButton(textStr, posY, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -40, 0, 30)
+    btn.Position = UDim2.new(0, 20, 0, posY)
+    btn.BackgroundColor3 = Color3.fromRGB(190, 40, 70)
+    btn.Text = textStr
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 9
+    btn.Font = Enum.Font.FredokaOne
+    btn.ZIndex = 22
+    btn.Parent = LangModal
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    
+    btn.MouseButton1Click:Connect(function()
+        LangModal:Destroy()
+        MainFrame.Visible = true
+        callback()
+    end)
+end
 
--- 2. BẢNG THÔNG BÁO GỐC DƯỚI PHẢI
-local KeyNotify = Instance.new("Frame")
-KeyNotify.Size = UDim2.new(0, 240, 0, 60)
-KeyNotify.Position = UDim2.new(1, -250, 1, -70)
-KeyNotify.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-KeyNotify.Visible = false
-KeyNotify.Parent = ScreenGui
-Instance.new("UICorner", KeyNotify).CornerRadius = UDim.new(0, 8)
-local KeyStroke = Instance.new("UIStroke")
-KeyStroke.Color = Color3.fromRGB(100, 255, 150)
-KeyStroke.Thickness = 1.2
-KeyStroke.Parent = KeyNotify
+createLangButton("🇻🇳  TIẾNG VIỆT", 66, function() print("Nguyen BaKhí Hub: Tiếng Việt") end)
+createLangButton("🇬🇧  ENGLISH", 102, function() print("Nguyen BaKhí Hub: English") end)
 
-local KeyText = Instance.new("TextLabel")
-KeyText.Size = UDim2.new(1, -10, 1, 0)
-KeyText.Position = UDim2.new(0, 5, 0, 0)
-KeyText.BackgroundTransparency = 1
-KeyText.Text = "Key Server\nFree mode - không cần key"
-KeyText.TextColor3 = Color3.fromRGB(200, 255, 200)
-KeyText.TextSize = 11
-KeyText.Font = Enum.Font.GothamSemibold
-KeyText.Parent = KeyNotify
+local OwnerCard = Instance.new("Frame")
+OwnerCard.Size = UDim2.new(1, -40, 0, 34)
+OwnerCard.Position = UDim2.new(0, 20, 0, 144)
+OwnerCard.BackgroundColor3 = Color3.fromRGB(35, 14, 25)
+OwnerCard.ZIndex = 21
+OwnerCard.Parent = LangModal
+Instance.new("UICorner", OwnerCard).CornerRadius = UDim.new(0, 8)
 
+local OwnerStroke = Instance.new("UIStroke")
+OwnerStroke.Color = Color3.fromRGB(255, 110, 190)
+OwnerStroke.Thickness = 1.2
+OwnerStroke.Parent = OwnerCard
 
--- 3. BẢNG THÔNG BÁO READY
-local ReadyNotify = Instance.new("Frame")
-ReadyNotify.Size = UDim2.new(0, 320, 0, 75)
-ReadyNotify.Position = UDim2.new(1, -340, 0, 80)
-ReadyNotify.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
-ReadyNotify.Visible = false
-ReadyNotify.Parent = ScreenGui
-Instance.new("UICorner", ReadyNotify).CornerRadius = UDim.new(0, 8)
+local OwnerText = Instance.new("TextLabel")
+OwnerText.Size = UDim2.new(1, 0, 1, 0)
+OwnerText.BackgroundTransparency = 1
+OwnerText.Text = "👑 OWNER: NGUYEN BAKHI"
+OwnerText.TextColor3 = Color3.fromRGB(255, 210, 240)
+OwnerText.TextSize = 9
+OwnerText.Font = Enum.Font.FredokaOne
+OwnerText.ZIndex = 22
+OwnerText.Parent = OwnerCard
 
-local ReadyTitle = Instance.new("TextLabel")
-ReadyTitle.Size = UDim2.new(1, -20, 0, 25)
-ReadyTitle.Position = UDim2.new(0, 10, 0, 5)
-ReadyTitle.BackgroundTransparency = 1
-ReadyTitle.Text = "🦋 No-Lag"
-ReadyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-ReadyTitle.TextSize = 12
-ReadyTitle.Font = Enum.Font.FredokaOne
-ReadyTitle.TextXAlignment = Enum.TextXAlignment.Left
-ReadyTitle.Parent = ReadyNotify
-
-local ReadyDesc = Instance.new("TextLabel")
-ReadyDesc.Size = UDim2.new(1, -20, 0, 20)
-ReadyDesc.Position = UDim2.new(0, 10, 0, 28)
-ReadyDesc.BackgroundTransparency = 1
-ReadyDesc.Text = "Ready. Saved settings load before automation starts."
-ReadyDesc.TextColor3 = Color3.fromRGB(180, 180, 200)
-ReadyDesc.TextSize = 10
-ReadyDesc.Font = Enum.Font.Gotham
-ReadyDesc.TextXAlignment = Enum.TextXAlignment.Left
-ReadyDesc.Parent = ReadyNotify
-
-local ProgressBar = Instance.new("Frame")
-ProgressBar.Size = UDim2.new(0.8, 0, 0, 3)
-ProgressBar.Position = UDim2.new(0.1, 0, 0, 58)
-ProgressBar.BackgroundColor3 = Color3.fromRGB(255, 100, 180)
-ProgressBar.BorderSizePixel = 0
-ProgressBar.Parent = ReadyNotify
-Instance.new("UICorner", ProgressBar).CornerRadius = UDim.new(1, 0)
-
-
--- 4. THANH NỔI PHÍA TRÊN
-local FloatingBar = Instance.new("Frame")
-FloatingBar.Size = UDim2.new(0, 260, 0, 32)
-FloatingBar.Position = UDim2.new(0.5, -130, 0, 15)
-FloatingBar.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
-FloatingBar.Visible = false
-FloatingBar.Parent = ScreenGui
-
-Instance.new("UICorner", FloatingBar).CornerRadius = UDim.new(1, 0)
-local FloatStroke = Instance.new("UIStroke")
-FloatStroke.Color = Color3.fromRGB(255, 100, 180)
-FloatStroke.Thickness = 1.5
-FloatStroke.Parent = FloatingBar
-
-local FloatText = Instance.new("TextLabel")
-FloatText.Size = UDim2.new(1, 0, 1, 0)
-FloatText.BackgroundTransparency = 1
-FloatText.Text = "🔴 No-Lag | 120 fps | 246 ms"
-FloatText.TextColor3 = Color3.fromRGB(255, 220, 240)
-FloatText.TextSize = 12
-FloatText.Font = Enum.Font.FredokaOne
-FloatText.Parent = FloatingBar
-
-
--- 5. MENU CHÍNH
+-- ==========================================
+-- GIAO DIỆN CHÍNH (CHUẨN VENYX X CHILLI NEW)
+-- ==========================================
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 680, 0, 440)
-MainFrame.Position = UDim2.new(0.5, -340, 0.5, -220)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+MainFrame.Size = UDim2.new(0, 720, 0, 410)
+MainFrame.Position = UDim2.new(0.5, -360, 0.5, -205)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 10, 18)
+MainFrame.BackgroundTransparency = 0.28
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Visible = false
+MainFrame.ZIndex = 10
 MainFrame.Parent = ScreenGui
 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(70, 60, 100)
-MainStroke.Thickness = 1.5
+MainStroke.Thickness = 2.5
 MainStroke.Parent = MainFrame
 
--- Sidebar
+task.spawn(function()
+    local hue = 0
+    while MainFrame and MainFrame.Parent do
+        hue = (hue + 0.005) % 1
+        local rainbowColor = Color3.fromHSV(hue, 0.8, 1)
+        MainStroke.Color = rainbowColor
+        AvatarStroke.Color = rainbowColor
+        task.wait(0.03)
+    end
+end)
+
+-- TOP BAR CHUẨN VENYX X CHILLI NEW
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 42)
+TopBar.BackgroundColor3 = Color3.fromRGB(28, 12, 22)
+TopBar.BackgroundTransparency = 0.15
+TopBar.ZIndex = 11
+TopBar.Parent = MainFrame
+Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 12)
+
+local LogoBox = Instance.new("Frame")
+LogoBox.Size = UDim2.new(0, 200, 0, 28)
+LogoBox.Position = UDim2.new(0, 10, 0.5, -14)
+LogoBox.BackgroundColor3 = Color3.fromRGB(40, 15, 30)
+LogoBox.ZIndex = 12
+LogoBox.Parent = TopBar
+Instance.new("UICorner", LogoBox).CornerRadius = UDim.new(1, 0)
+
+local LogoText = Instance.new("TextLabel")
+LogoText.Size = UDim2.new(1, 0, 1, 0)
+LogoText.BackgroundTransparency = 1
+LogoText.Text = " V  Venyx x Nguyen BaKhí"
+LogoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+LogoText.TextSize = 9
+LogoText.Font = Enum.Font.FredokaOne
+LogoText.TextXAlignment = Enum.TextXAlignment.Left
+LogoText.ZIndex = 13
+LogoText.Parent = LogoBox
+
+local StatusPill = Instance.new("Frame")
+StatusPill.Size = UDim2.new(0, 220, 0, 26)
+StatusPill.Position = UDim2.new(0.5, -110, 0.5, -13)
+StatusPill.BackgroundColor3 = Color3.fromRGB(32, 12, 24)
+StatusPill.ZIndex = 12
+StatusPill.Parent = TopBar
+Instance.new("UICorner", StatusPill).CornerRadius = UDim.new(1, 0)
+local StatusStroke = Instance.new("UIStroke")
+StatusStroke.Color = Color3.fromRGB(255, 120, 190)
+StatusStroke.Thickness = 1
+StatusStroke.Parent = StatusPill
+
+local StatusDot = Instance.new("Frame")
+StatusDot.Size = UDim2.new(0, 6, 0, 6)
+StatusDot.Position = UDim2.new(0, 12, 0.5, -3)
+StatusDot.BackgroundColor3 = Color3.fromRGB(50, 255, 100)
+StatusDot.ZIndex = 13
+StatusDot.Parent = StatusPill
+Instance.new("UICorner", StatusDot).CornerRadius = UDim.new(1, 0)
+
+local StatusText = Instance.new("TextLabel")
+StatusText.Size = UDim2.new(1, -24, 1, 0)
+StatusText.Position = UDim2.new(0, 24, 0, 0)
+StatusText.BackgroundTransparency = 1
+StatusText.Text = "Đang chạy • v81.0 Không Đứng Im"
+StatusText.TextColor3 = Color3.fromRGB(230, 210, 220)
+StatusText.TextSize = 8
+StatusText.Font = Enum.Font.GothamBold
+StatusText.ZIndex = 13
+StatusText.Parent = StatusPill
+
+local SearchBox = Instance.new("TextBox")
+SearchBox.Size = UDim2.new(0, 140, 0, 26)
+SearchBox.Position = UDim2.new(1, -175, 0.5, -13)
+SearchBox.BackgroundColor3 = Color3.fromRGB(32, 12, 24)
+SearchBox.PlaceholderText = "🔍 Tìm kiếm..."
+SearchBox.Text = ""
+SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SearchBox.PlaceholderColor3 = Color3.fromRGB(180, 160, 170)
+SearchBox.TextSize = 8.5
+SearchBox.Font = Enum.Font.GothamSemibold
+SearchBox.ZIndex = 12
+SearchBox.Parent = TopBar
+Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(1, 0)
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+CloseBtn.Position = UDim2.new(1, -30, 0.5, -12)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(240, 50, 110)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 9.5
+CloseBtn.Font = Enum.Font.FredokaOne
+CloseBtn.ZIndex = 12
+CloseBtn.Parent = TopBar
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    FloatAvatarBtn.Visible = true
+end)
+
+FloatAvatarBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    FloatAvatarBtn.Visible = false
+end)
+
+-- THANH TAB PHỤ NGANG PHÍA TRÊN
+local SubTabBar = Instance.new("Frame")
+SubTabBar.Size = UDim2.new(1, -60, 0, 26)
+SubTabBar.Position = UDim2.new(0, 52, 0, 44)
+SubTabBar.BackgroundTransparency = 1
+SubTabBar.ZIndex = 11
+SubTabBar.Parent = MainFrame
+
+local SubTablayout = Instance.new("UIListLayout")
+SubTablayout.FillDirection = Enum.FillDirection.Horizontal
+SubTablayout.SortOrder = Enum.SortOrder.LayoutOrder
+SubTablayout.Padding = UDim.new(0, 8)
+SubTablayout.Parent = SubTabBar
+
+local function createSubTabPill(tabName)
+    local pill = Instance.new("TextButton")
+    pill.Size = UDim2.new(0, 130, 1, 0)
+    pill.BackgroundColor3 = Color3.fromRGB(45, 18, 32)
+    pill.Text = tabName
+    pill.TextColor3 = Color3.fromRGB(255, 220, 240)
+    pill.TextSize = 8
+    pill.Font = Enum.Font.FredokaOne
+    pill.ZIndex = 12
+    pill.Parent = SubTabBar
+    Instance.new("UICorner", pill).CornerRadius = UDim.new(1, 0)
+end
+
+createSubTabPill("Halloween & Sao Băng")
+createSubTabPill("The Hollow")
+createSubTabPill("Bắt Bướm")
+createSubTabPill("Admin (AA)")
+
+-- SIDEBAR BÊN TRÁI (ICONS DỌC)
 local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, 60, 1, 0)
-Sidebar.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
-Sidebar.BorderSizePixel = 0
+Sidebar.Size = UDim2.new(0, 40, 1, -74)
+Sidebar.Position = UDim2.new(0, 6, 0, 72)
+Sidebar.BackgroundColor3 = Color3.fromRGB(25, 10, 20)
+Sidebar.BackgroundTransparency = 0.3
+Sidebar.ZIndex = 11
 Sidebar.Parent = MainFrame
-Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 8)
 
 local SideLayout = Instance.new("UIListLayout")
 SideLayout.SortOrder = Enum.SortOrder.LayoutOrder
-SideLayout.Padding = UDim.new(0, 8)
+SideLayout.Padding = UDim.new(0, 5)
 SideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 SideLayout.Parent = Sidebar
 
 local SidePadding = Instance.new("UIPadding")
-SidePadding.PaddingTop = UDim.new(0, 12)
+SidePadding.PaddingTop = UDim.new(0, 8)
 SidePadding.Parent = Sidebar
 
--- Content Area
-local ContentArea = Instance.new("Frame")
-ContentArea.Size = UDim2.new(1, -70, 1, -15)
-ContentArea.Position = UDim2.new(0, 65, 0, 10)
-ContentArea.BackgroundTransparency = 1
-ContentArea.Parent = MainFrame
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Size = UDim2.new(1, -56, 1, -74)
+ContentContainer.Position = UDim2.new(0, 52, 0, 72)
+ContentContainer.BackgroundTransparency = 1
+ContentContainer.ZIndex = 11
+ContentContainer.Parent = MainFrame
 
--- Tab Home
-local HomeTab = Instance.new("ScrollingFrame")
-HomeTab.Size = UDim2.new(1, 0, 1, 0)
-HomeTab.BackgroundTransparency = 1
-HomeTab.BorderSizePixel = 0
-HomeTab.CanvasSize = UDim2.new(0, 0, 0, 500)
-HomeTab.ScrollBarThickness = 3
-HomeTab.Visible = false
-HomeTab.Parent = ContentArea
-
-local HomeLayout = Instance.new("UIListLayout")
-HomeLayout.SortOrder = Enum.SortOrder.LayoutOrder
-HomeLayout.Padding = UDim.new(0, 10)
-HomeLayout.Parent = HomeTab
-
-local WelcomeBox = Instance.new("Frame")
-WelcomeBox.Size = UDim2.new(1, -10, 0, 90)
-WelcomeBox.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-WelcomeBox.Parent = HomeTab
-Instance.new("UICorner", WelcomeBox).CornerRadius = UDim.new(0, 8)
-
-local WelcomeText = Instance.new("TextLabel")
-WelcomeText.Size = UDim2.new(1, -20, 1, 0)
-WelcomeText.Position = UDim2.new(0, 10, 0, 0)
-WelcomeText.BackgroundTransparency = 1
-WelcomeText.Text = "Welcome To No-Lag, @Bfkai\nMethod: Lifetime Key\nExecution Amount: 0\nRemaining Time: Lifetime / Infinite"
-WelcomeText.TextColor3 = Color3.fromRGB(220, 220, 240)
-WelcomeText.TextSize = 12
-WelcomeText.Font = Enum.Font.GothamSemibold
-WelcomeText.TextXAlignment = Enum.TextXAlignment.Left
-WelcomeText.Parent = WelcomeBox
-
-local DevBox = Instance.new("Frame")
-DevBox.Size = UDim2.new(1, -10, 0, 80)
-DevBox.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-DevBox.Parent = HomeTab
-Instance.new("UICorner", DevBox).CornerRadius = UDim.new(0, 8)
-
-local DevText = Instance.new("TextLabel")
-DevText.Size = UDim2.new(1, -20, 1, 0)
-DevText.Position = UDim2.new(0, 10, 0, 0)
-DevText.BackgroundTransparency = 1
-DevText.Text = "✨ Đội Ngũ Phát Triển\nBản quyền thuộc Đội ngũ No-Lag:\nCảm ơn bạn đã ủng hộ No-Lag :p\ndiscord.gg/Ndzk9kPZmT"
-DevText.TextColor3 = Color3.fromRGB(200, 200, 220)
-DevText.TextSize = 12
-DevText.Font = Enum.Font.Gotham
-DevText.TextXAlignment = Enum.TextXAlignment.Left
-DevText.Parent = DevBox
-
-local VerBox = Instance.new("Frame")
-VerBox.Size = UDim2.new(1, -10, 0, 50)
-VerBox.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-VerBox.Parent = HomeTab
-Instance.new("UICorner", VerBox).CornerRadius = UDim.new(0, 8)
-
-local VerText = Instance.new("TextLabel")
-VerText.Size = UDim2.new(1, -20, 1, 0)
-VerText.Position = UDim2.new(0, 10, 0, 0)
-VerText.BackgroundTransparency = 1
-VerText.Text = "📌 Phiên Bản: Phiên bản Script: 0038"
-VerText.TextColor3 = Color3.fromRGB(255, 150, 200)
-VerText.TextSize = 12
-VerText.Font = Enum.Font.FredokaOne
-VerText.TextXAlignment = Enum.TextXAlignment.Left
-VerText.Parent = VerBox
-
-
--- Tab 1: Farm
-local FarmTab = Instance.new("Frame")
-FarmTab.Size = UDim2.new(1, 0, 1, 0)
-FarmTab.BackgroundTransparency = 1
-FarmTab.Visible = true
-FarmTab.Parent = ContentArea
-
-local ColLeft = Instance.new("ScrollingFrame")
-ColLeft.Size = UDim2.new(0.48, 0, 1, 0)
-ColLeft.Position = UDim2.new(0, 0, 0, 0)
-ColLeft.BackgroundTransparency = 1
-ColLeft.BorderSizePixel = 0
-ColLeft.CanvasSize = UDim2.new(0, 0, 0, 750)
-ColLeft.ScrollBarThickness = 3
-ColLeft.Parent = FarmTab
-
-local ColLeftLayout = Instance.new("UIListLayout")
-ColLeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
-ColLeftLayout.Padding = UDim.new(0, 6)
-ColLeftLayout.Parent = ColLeft
-
-local ColRight = Instance.new("ScrollingFrame")
-ColRight.Size = UDim2.new(0.48, 0, 1, 0)
-ColRight.Position = UDim2.new(0.52, 0, 0, 0)
-ColRight.BackgroundTransparency = 1
-ColRight.BorderSizePixel = 0
-ColRight.CanvasSize = UDim2.new(0, 0, 0, 750)
-ColRight.ScrollBarThickness = 3
-ColRight.Parent = FarmTab
-
-local ColRightLayout = Instance.new("UIListLayout")
-ColRightLayout.SortOrder = Enum.SortOrder.LayoutOrder
-ColRightLayout.Padding = UDim.new(0, 6)
-ColRightLayout.Parent = ColRight
-
-
--- Tab 2: Extra
-local ExtraTab = Instance.new("ScrollingFrame")
-ExtraTab.Size = UDim2.new(1, 0, 1, 0)
-ExtraTab.BackgroundTransparency = 1
-ExtraTab.BorderSizePixel = 0
-ExtraTab.CanvasSize = UDim2.new(0, 0, 0, 1100)
-ExtraTab.ScrollBarThickness = 4
-ExtraTab.Visible = false
-ExtraTab.Parent = ContentArea
-
-local ExtraLayout = Instance.new("UIListLayout")
-ExtraLayout.SortOrder = Enum.SortOrder.LayoutOrder
-ExtraLayout.Padding = UDim.new(0, 6)
-ExtraLayout.Parent = ExtraTab
-
-
-local function createSidebarBtn(iconText, targetTab)
-    local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0, 42, 0, 42)
-    Btn.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-    Btn.Text = iconText
-    Btn.TextColor3 = Color3.fromRGB(240, 240, 255)
-    Btn.TextSize = 14
-    Btn.Font = Enum.Font.FredokaOne
-    Btn.Parent = Sidebar
-
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 8)
-
-    Btn.MouseButton1Click:Connect(function()
-        HomeTab.Visible = (targetTab == 0)
-        FarmTab.Visible = (targetTab == 1)
-        ExtraTab.Visible = (targetTab == 2)
-    end)
+local function createTabFrame()
+    local tab = Instance.new("ScrollingFrame")
+    tab.Size = UDim2.new(1, 0, 1, 0)
+    tab.BackgroundTransparency = 1
+    tab.BorderSizePixel = 0
+    tab.CanvasSize = UDim2.new(0, 0, 0, 500)
+    tab.ScrollBarThickness = 2
+    tab.Visible = false
+    tab.ZIndex = 12
+    tab.Parent = ContentContainer
+    return tab
 end
 
-createSidebarBtn("🦋", 0)
-createSidebarBtn("🏠", 0)
-createSidebarBtn("🏴", 1)
-createSidebarBtn("⚙️", 2)
-createSidebarBtn("👁️", 2)
-createSidebarBtn("✨", 2)
+local HomeTab = createTabFrame()
+local StealEggTab = createTabFrame()
+local HalloweenTab = createTabFrame()
+local ButterflyTab = createTabFrame()
+local PetTab = createTabFrame()
+local SpeedTab = createTabFrame()
+local SettingTab = createTabFrame()
 
+StealEggTab.Visible = true
 
-local function createToggle(parentFrame, titleText, callback)
-    local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(1, -5, 0, 34)
-    Btn.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-    Btn.Text = "  " .. titleText
-    Btn.TextColor3 = Color3.fromRGB(210, 210, 230)
-    Btn.TextSize = 11
-    Btn.Font = Enum.Font.GothamSemibold
-    Btn.TextXAlignment = Enum.TextXAlignment.Left
-    Btn.Parent = parentFrame
+local function addTabHeader(parent, text)
+    local CatTitle = Instance.new("TextLabel")
+    CatTitle.Size = UDim2.new(1, 0, 0, 22)
+    CatTitle.Position = UDim2.new(0, 4, 0, 2)
+    CatTitle.BackgroundTransparency = 1
+    CatTitle.Text = text
+    CatTitle.TextColor3 = Color3.fromRGB(255, 140, 210)
+    CatTitle.TextSize = 9
+    CatTitle.Font = Enum.Font.FredokaOne
+    CatTitle.TextXAlignment = Enum.TextXAlignment.Left
+    CatTitle.ZIndex = 13
+    CatTitle.Parent = parent
+end
 
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+addTabHeader(HomeTab, "Trang Chủ • Nguyen BaKhí Dashboard")
+addTabHeader(StealEggTab, "Cướp Trứng • Bộ Lọc Nâng Cao & Chọn Khu Vực")
+addTabHeader(HalloweenTab, "Sự Kiện • HALLOWEEN & PUMPKIN MOON")
+addTabHeader(ButterflyTab, "Bắt Bướm • Mùa Bướm Nở & Máy Đổi Bướm")
+addTabHeader(PetTab, "Thú Cưng • Quản lý Pet & Auto Equip")
+addTabHeader(SpeedTab, "Máy Chạy Bộ • Tốc độ 795 & Auto Treadmill")
+addTabHeader(SettingTab, "Cài Đặt • Tùy chỉnh Hub & Server Utility")
 
-    local Status = Instance.new("TextLabel")
-    Status.Size = UDim2.new(0, 40, 1, 0)
-    Status.Position = UDim2.new(1, -45, 0, 0)
-    Status.BackgroundTransparency = 1
-    Status.Text = "OFF"
-    Status.TextColor3 = Color3.fromRGB(150, 150, 170)
-    Status.TextSize = 11
-    Status.Font = Enum.Font.FredokaOne
-    Status.Parent = Btn
+local function createToggle(parent, titleText, posY, callback)
+    local item = Instance.new("Frame")
+    item.Size = UDim2.new(1, -6, 0, 28)
+    item.Position = UDim2.new(0, 0, 0, posY)
+    item.BackgroundColor3 = Color3.fromRGB(30, 12, 22)
+    item.BackgroundTransparency = 0.25
+    item.ZIndex = 13
+    item.Parent = parent
+    Instance.new("UICorner", item).CornerRadius = UDim.new(0, 6)
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -38, 1, 0)
+    lbl.Position = UDim2.new(0, 8, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = titleText
+    lbl.TextColor3 = Color3.fromRGB(245, 225, 235)
+    lbl.TextSize = 8
+    lbl.Font = Enum.Font.GothamSemibold
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 14
+    lbl.Parent = item
+
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 30, 0, 14)
+    toggleBtn.Position = UDim2.new(1, -34, 0.5, -7)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(55, 22, 42)
+    toggleBtn.Text = ""
+    toggleBtn.ZIndex = 14
+    toggleBtn.Parent = item
+    Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(1, 0)
+
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(0, 10, 0, 10)
+    circle.Position = UDim2.new(0, 2, 0.5, -5)
+    circle.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    circle.ZIndex = 15
+    circle.Parent = toggleBtn
+    Instance.new("UICorner", circle).CornerRadius = UDim.new(1, 0)
 
     local active = false
-    Btn.MouseButton1Click:Connect(function()
+    toggleBtn.MouseButton1Click:Connect(function()
         active = not active
         if active then
-            Btn.BackgroundColor3 = Color3.fromRGB(60, 40, 80)
-            Status.Text = "ON"
-            Status.TextColor3 = Color3.fromRGB(180, 255, 180)
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 180)
+            circle.Position = UDim2.new(1, -12, 0.5, -5)
+            circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         else
-            Btn.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-            Status.Text = "OFF"
-            Status.TextColor3 = Color3.fromRGB(150, 150, 170)
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(55, 22, 42)
+            circle.Position = UDim2.new(0, 2, 0.5, -5)
+            circle.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
         end
         pcall(function() callback(active) end)
     end)
-    return Btn
 end
 
-local function createDropdown(parentFrame, titleText, options, callback)
-    local Drop = Instance.new("Frame")
-    Drop.Size = UDim2.new(1, -5, 0, 48)
-    Drop.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-    Drop.Parent = parentFrame
-    Instance.new("UICorner", Drop).CornerRadius = UDim.new(0, 6)
+-- ==========================================
+-- HỆ THỐNG AN TOÀN CHỐNG ĐỨNG IM TUYỆT ĐỐI (v81.0)
+-- ==========================================
+_G.AutoStealEgg = false
+_G.AutoCollectAll = false
 
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -10, 0, 20)
-    Label.Position = UDim2.new(0, 6, 0, 4)
-    Label.BackgroundTransparency = 1
-    Label.Text = titleText
-    Label.TextColor3 = Color3.fromRGB(180, 180, 200)
-    Label.TextSize = 11
-    Label.Font = Enum.Font.GothamSemibold
-    Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Parent = Drop
-
-    local SelBtn = Instance.new("TextButton")
-    SelBtn.Size = UDim2.new(1, -12, 0, 20)
-    SelBtn.Position = UDim2.new(0, 6, 0, 24)
-    SelBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
-    SelBtn.Text = options[1] or "Chọn..."
-    SelBtn.TextColor3 = Color3.fromRGB(255, 150, 220)
-    SelBtn.TextSize = 11
-    SelBtn.Font = Enum.Font.FredokaOne
-    SelBtn.Parent = Drop
-    Instance.new("UICorner", SelBtn).CornerRadius = UDim.new(0, 4)
-
-    local idx = 1
-    SelBtn.MouseButton1Click:Connect(function()
-        idx = idx + 1
-        if idx > #options then idx = 1 end
-        SelBtn.Text = options[idx]
-        pcall(function() callback(options[idx]) end)
-    end)
-end
-
-local function startHub()
-    LangModal.Visible = false
-    KeyNotify.Visible = true
-    ReadyNotify.Visible = true
-    FloatingBar.Visible = true
-    MainFrame.Visible = true
-
-    task.spawn(function()
-        task.wait(4)
-        ReadyNotify.Visible = false
-    end)
-end
-
-VNBtn.MouseButton1Click:Connect(startHub)
-ENBtn.MouseButton1Click:Connect(startHub)
-
-
--- CỘT TRÁI FARM TAB (ĐÃ SỬA LỖI VĂNG LÊN TRỜI / GLITCH BUG)
-createToggle(ColLeft, "Tự Động Cày (Auto Farm)", function(state)
-    _G.AutoFarm = state
-    task.spawn(function()
-        while _G.AutoFarm do
-            task.wait(0.4)
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local hrp = LocalPlayer.Character.HumanoidRootPart
-                        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                        if hum and hum.Health > 0 and (v.Position - hrp.Position).Magnitude < 500 then
-                            hrp.CFrame = v.CFrame + Vector3.new(0, 3, 0)
-                            firetouchinterest(hrp, v, 0)
-                            firetouchinterest(hrp, v, 1)
-                        end
-                        break
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
-createToggle(ColLeft, "Tự Cướp Trứng Đã Chọn", function(state)
-    _G.AutoSelectedEggs = state
-    task.spawn(function()
-        while _G.AutoSelectedEggs do
-            task.wait(0.4)
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local hrp = LocalPlayer.Character.HumanoidRootPart
-                        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                        if hum and hum.Health > 0 and (v.Position - hrp.Position).Magnitude < 500 then
-                            hrp.CFrame = v.CFrame + Vector3.new(0, 3, 0)
-                            firetouchinterest(hrp, v, 0)
-                            firetouchinterest(hrp, v, 1)
+task.spawn(function()
+    while true do
+        task.wait(0.25)
+        pcall(function()
+            local char = LocalPlayer.Character
+            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+            local hrp = char.HumanoidRootPart
+            
+            if _G.AutoStealEgg then
+                for _, obj in ipairs(Workspace:GetChildren()) do
+                    if not _G.AutoStealEgg then break end
+                    if obj and string.find(string.lower(obj.Name), "egg") then
+                        if obj:IsA("Model") and obj.PrimaryPart then
+                            hrp.CFrame = obj.PrimaryPart.CFrame + Vector3.new(0, 3, 0)
+                            task.wait(0.3)
+                        elseif obj:IsA("BasePart") then
+                            hrp.CFrame = obj.CFrame + Vector3.new(0, 3, 0)
+                            task.wait(0.3)
                         end
                     end
                 end
-            end)
-        end
-    end)
-end)
-
-createToggle(ColLeft, "Tự Cướp Tất Cả Trứng", function(state)
-    _G.AutoAllEggs = state
-    task.spawn(function()
-        while _G.AutoAllEggs do
-            task.wait(0.3)
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local hrp = LocalPlayer.Character.HumanoidRootPart
-                        firetouchinterest(hrp, v, 0)
-                        firetouchinterest(hrp, v, 1)
+            end
+            
+            if _G.AutoCollectAll then
+                for _, obj in ipairs(Workspace:GetChildren()) do
+                    if not _G.AutoCollectAll then break end
+                    if obj and obj:IsA("BasePart") then
+                        local n = string.lower(obj.Name)
+                        if string.find(n, "coin") or string.find(n, "gem") or string.find(n, "stub") then
+                            hrp.CFrame = obj.CFrame
+                            task.wait(0.2)
+                        end
                     end
                 end
-            end)
-        end
-    end)
+            end
+        end)
+    end
 end)
 
-createDropdown(ColLeft, "Target Priority", {"Độ Hiếm Cao Nhất", "Giá Trị Cao Nhất", "Gần Nhất", "Secret", "Extreme"}, function(val) _G.Priority = val end)
-createDropdown(ColLeft, "Chế Độ Di Chuyển", {"Mặc Định (Original)", "Instant", "Smooth Tween"}, function(val) _G.MoveMode = val end)
+-- TAB 1: CƯỚP TRỨNG
+local SLeftCol = Instance.new("Frame")
+SLeftCol.Size = UDim2.new(0.49, -2, 1, -28)
+SLeftCol.Position = UDim2.new(0, 0, 0, 26)
+SLeftCol.BackgroundTransparency = 1
+SLeftCol.ZIndex = 13
+SLeftCol.Parent = StealEggTab
 
--- CỘT PHẢI FARM TAB
+local SRightCol = Instance.new("Frame")
+SRightCol.Size = UDim2.new(0.49, -2, 1, -28)
+SRightCol.Position = UDim2.new(0.51, 0, 0, 26)
+SRightCol.BackgroundTransparency = 1
+SRightCol.ZIndex = 13
+SRightCol.Parent = StealEggTab
+
+createToggle(SLeftCol, "Tự Động Cướp Trứng (Auto Steal)", 0, function(s) _G.AutoStealEgg = s end)
+createToggle(SLeftCol, "Cướp Trứng Thiếu Trong Chỉ Mục", 32, function(s) _G.MissingIndex = s end)
+createToggle(SLeftCol, "Cướp Từ Người Chơi Khác", 64, function(s) _G.StealFromPlayers = s end)
+createToggle(SLeftCol, "Chống Vệ Sĩ (Anti-Guard)", 96, function(s) _G.AntiGuard = s end)
+createToggle(SLeftCol, "Thả Trứng Ở Vùng An Toàn", 128, function(s) _G.SafeZoneDrop = s end)
+createToggle(SLeftCol, "Bán Trứng Rẻ Nhất Khi Đầy Túi", 160, function(s) _G.AutoSellCheap = s end)
+
 local FilterTitle = Instance.new("TextLabel")
-FilterTitle.Size = UDim2.new(1, -5, 0, 26)
+FilterTitle.Size = UDim2.new(1, 0, 0, 22)
+FilterTitle.Position = UDim2.new(0, 0, 0, 0)
 FilterTitle.BackgroundTransparency = 1
-FilterTitle.Text = "📌 Bộ Lọc Cướp (Filter)"
-FilterTitle.TextColor3 = Color3.fromRGB(255, 150, 200)
-FilterTitle.TextSize = 12
+FilterTitle.Text = "🎯 BỘ LỌC & CHỌN KHU VỰC"
+FilterTitle.TextColor3 = Color3.fromRGB(255, 180, 100)
+FilterTitle.TextSize = 8.5
 FilterTitle.Font = Enum.Font.FredokaOne
 FilterTitle.TextXAlignment = Enum.TextXAlignment.Left
-FilterTitle.Parent = ColRight
+FilterTitle.ZIndex = 14
+FilterTitle.Parent = SRightCol
 
-local IncomeBox = Instance.new("Frame")
-IncomeBox.Size = UDim2.new(1, -5, 0, 48)
-IncomeBox.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
-IncomeBox.Parent = ColRight
-Instance.new("UICorner", IncomeBox).CornerRadius = UDim.new(0, 6)
+createToggle(SRightCol, "Ưu Tiên Trứng Giá Trị Cao Nhất", 26, function(s) _G.PriorityHighValue = s end)
+createToggle(SRightCol, "Lọc Theo Độ Hiếm Thánh Thần", 58, function(s) _G.FilterGodly = s end)
 
-local IncomeLabel = Instance.new("TextLabel")
-IncomeLabel.Size = UDim2.new(1, -10, 0, 20)
-IncomeLabel.Position = UDim2.new(0, 6, 0, 4)
-IncomeLabel.BackgroundTransparency = 1
-IncomeLabel.Text = "Thu Nhập Tối Thiểu / Giây"
-IncomeLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
-IncomeLabel.TextSize = 11
-IncomeLabel.Font = Enum.Font.GothamSemibold
-IncomeLabel.TextXAlignment = Enum.TextXAlignment.Left
-IncomeLabel.Parent = IncomeBox
+local DropFrame = Instance.new("Frame")
+DropFrame.Size = UDim2.new(1, 0, 0, 38)
+DropFrame.Position = UDim2.new(0, 0, 0, 92)
+DropFrame.BackgroundColor3 = Color3.fromRGB(35, 14, 25)
+DropFrame.ZIndex = 14
+DropFrame.Parent = SRightCol
+Instance.new("UICorner", DropFrame).CornerRadius = UDim.new(0, 6)
 
-local IncomeInput = Instance.new("TextBox")
-IncomeInput.Size = UDim2.new(1, -12, 0, 20)
-IncomeInput.Position = UDim2.new(0, 6, 0, 24)
-IncomeInput.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
-IncomeInput.Text = "0"
-IncomeInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-IncomeInput.TextSize = 11
-IncomeInput.Font = Enum.Font.FredokaOne
-IncomeInput.Parent = IncomeBox
-Instance.new("UICorner", IncomeInput).CornerRadius = UDim.new(0, 4)
+local DropLabel = Instance.new("TextLabel")
+DropLabel.Size = UDim2.new(1, -10, 1, 0)
+DropLabel.Position = UDim2.new(0, 8, 0, 0)
+DropLabel.BackgroundTransparency = 1
+DropLabel.Text = "🌐 Khu Vực: Enchanted Forest [+3]"
+DropLabel.TextColor3 = Color3.fromRGB(255, 220, 240)
+DropLabel.TextSize = 8
+DropLabel.Font = Enum.Font.GothamBold
+DropLabel.TextXAlignment = Enum.TextXAlignment.Left
+DropLabel.ZIndex = 15
+DropLabel.Parent = DropFrame
 
-createDropdown(ColRight, "Độ Hiếm Tối Thiểu", {"Chọn...", "Thánh Thần", "Huyền Thoại", "Sử Thi"}, function(val) _G.MinRarity = val end)
-createDropdown(ColRight, "Độ Hiếm Chính Xác", {"Chọn...", "Secret", "Extreme", "Divine"}, function(val) _G.ExactRarity = val end)
+-- TAB 2: HALLOWEEN
+local HLeftCol = Instance.new("Frame")
+HLeftCol.Size = UDim2.new(0.49, -2, 1, -28)
+HLeftCol.Position = UDim2.new(0, 0, 0, 26)
+HLeftCol.BackgroundTransparency = 1
+HLeftCol.ZIndex = 13
+HLeftCol.Parent = HalloweenTab
 
--- TAB 2 (EXTRA)
-createToggle(ExtraTab, "Tự Động Vào Máy Trên Bục", function(state)
-    _G.AutoPodium = state
-    task.spawn(function()
-        while _G.AutoPodium do
-            task.wait(0.5)
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if (v.Name:lower():find("podium") or v.Name:lower():find("buc") or v.Name:lower():find("may")) and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        
+local HRightCol = Instance.new("Frame")
+HRightCol.Size = UDim2.new(0.49, -2, 1, -28)
+HRightCol.Position = UDim2.new(0.51, 0, 0, 26)
+HRightCol.BackgroundTransparency = 1
+HRightCol.ZIndex = 13
+HRightCol.Parent = HalloweenTab
+
+createToggle(HLeftCol, "Q Phiên Không Gian Halloween", 0, function(s) _G.SpaceHallow = s end)
+createToggle(HLeftCol, "Tự Động Cướp Thùng Halloween", 32, function(s) _G.AutoHallowEggs = s end)
+createToggle(HLeftCol, "Cướp Siêu Tốc Thùng Halloween", 64, function(s) _G.SuperFast = s end)
+createToggle(HLeftCol, "Tự Động Đánh Boss Bí Ngô", 96, function(s) _G.AutoPumpkinBoss = s end)
+createToggle(HLeftCol, "Tự Động Trăng Bí Ngô", 128, function(s) _G.AutoPumpkinMoon = s end)
+
+createToggle(HRightCol, "Tự Động Đánh Quái Vật", 0, function(s

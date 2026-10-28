@@ -1,4 +1,4 @@
--- Nguyenbakhi - Steal an Egg (Ultimate Pro GUI v34.0 - Full No-Lag Hub & Welcome Dialog & Key Server Notification)
+-- Nguyenbakhi - Steal an Egg (Ultimate Pro GUI v35.0 - Fixed Fling / Teleport Glitch Bug)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -13,7 +13,7 @@ ScreenGui.Name = "NguyenBakhiGUI"
 ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- 1. BẢNG CHỌN NGÔN NGỮ BAN ĐẦU (Giống ảnh Screenshot_20261028_152548.jpg)
+-- 1. BẢNG CHỌN NGÔN NGỮ BAN ĐẦU
 local LangModal = Instance.new("Frame")
 LangModal.Size = UDim2.new(0, 420, 0, 180)
 LangModal.Position = UDim2.new(0.5, -210, 0.5, -90)
@@ -57,7 +57,7 @@ ENBtn.Parent = LangModal
 Instance.new("UICorner", ENBtn).CornerRadius = UDim.new(0, 8)
 
 
--- 2. BẢNG THÔNG BÁO GỐC DƯỚI PHẢI: "Key Server - Free mode - không cần key" (Giống ảnh 25)
+-- 2. BẢNG THÔNG BÁO GỐC DƯỚI PHẢI
 local KeyNotify = Instance.new("Frame")
 KeyNotify.Size = UDim2.new(0, 240, 0, 60)
 KeyNotify.Position = UDim2.new(1, -250, 1, -70)
@@ -81,7 +81,7 @@ KeyText.Font = Enum.Font.GothamSemibold
 KeyText.Parent = KeyNotify
 
 
--- 3. BẢNG THÔNG BÁO "Ready. Saved settings load..." (Giống ảnh 19)
+-- 3. BẢNG THÔNG BÁO READY
 local ReadyNotify = Instance.new("Frame")
 ReadyNotify.Size = UDim2.new(0, 320, 0, 75)
 ReadyNotify.Position = UDim2.new(1, -340, 0, 80)
@@ -121,7 +121,7 @@ ProgressBar.Parent = ReadyNotify
 Instance.new("UICorner", ProgressBar).CornerRadius = UDim.new(1, 0)
 
 
--- 4. THANH NỔI PHÍA TRÊN (Floating Bar)
+-- 4. THANH NỔI PHÍA TRÊN
 local FloatingBar = Instance.new("Frame")
 FloatingBar.Size = UDim2.new(0, 260, 0, 32)
 FloatingBar.Position = UDim2.new(0.5, -130, 0, 15)
@@ -145,7 +145,7 @@ FloatText.Font = Enum.Font.FredokaOne
 FloatText.Parent = FloatingBar
 
 
--- 5. MENU CHÍNH (MAIN FRAME)
+-- 5. MENU CHÍNH
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 680, 0, 440)
 MainFrame.Position = UDim2.new(0.5, -340, 0.5, -220)
@@ -162,7 +162,7 @@ MainStroke.Color = Color3.fromRGB(70, 60, 100)
 MainStroke.Thickness = 1.5
 MainStroke.Parent = MainFrame
 
--- Sidebar dọc bên trái
+-- Sidebar
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 60, 1, 0)
 Sidebar.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
@@ -180,7 +180,7 @@ local SidePadding = Instance.new("UIPadding")
 SidePadding.PaddingTop = UDim.new(0, 12)
 SidePadding.Parent = Sidebar
 
--- Khu vực nội dung bên phải
+-- Content Area
 local ContentArea = Instance.new("Frame")
 ContentArea.Size = UDim2.new(1, -70, 1, -15)
 ContentArea.Position = UDim2.new(0, 65, 0, 10)
@@ -254,7 +254,7 @@ VerText.TextXAlignment = Enum.TextXAlignment.Left
 VerText.Parent = VerBox
 
 
--- Tab 1: Farm (2 cột)
+-- Tab 1: Farm
 local FarmTab = Instance.new("Frame")
 FarmTab.Size = UDim2.new(1, 0, 1, 0)
 FarmTab.BackgroundTransparency = 1
@@ -290,7 +290,7 @@ ColRightLayout.Padding = UDim.new(0, 6)
 ColRightLayout.Parent = ColRight
 
 
--- Tab 2: Extra (Sự kiện, Boss, v.v.)
+-- Tab 2: Extra
 local ExtraTab = Instance.new("ScrollingFrame")
 ExtraTab.Size = UDim2.new(1, 0, 1, 0)
 ExtraTab.BackgroundTransparency = 1
@@ -411,7 +411,6 @@ local function createDropdown(parentFrame, titleText, options, callback)
     end)
 end
 
--- XỬ LÝ SỰ KIỆN CHỌN NGÔN NGỮ ĐỂ VÀO GIAO DIỆN CHÍNH
 local function startHub()
     LangModal.Visible = false
     KeyNotify.Visible = true
@@ -429,19 +428,22 @@ VNBtn.MouseButton1Click:Connect(startHub)
 ENBtn.MouseButton1Click:Connect(startHub)
 
 
--- CỘT TRÁI FARM TAB (SỬA LỖI NHẬT TRỨNG KHÔNG BỊ ĐỨNG IM)
+-- CỘT TRÁI FARM TAB (ĐÃ SỬA LỖI VĂNG LÊN TRỜI / GLITCH BUG)
 createToggle(ColLeft, "Tự Động Cày (Auto Farm)", function(state)
     _G.AutoFarm = state
     task.spawn(function()
         while _G.AutoFarm do
-            task.wait(0.25)
+            task.wait(0.4)
             pcall(function()
                 for _, v in pairs(workspace:GetDescendants()) do
                     if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                         local hrp = LocalPlayer.Character.HumanoidRootPart
-                        hrp.CFrame = v.CFrame + Vector3.new(0, 3, 0)
-                        firetouchinterest(hrp, v, 0)
-                        firetouchinterest(hrp, v, 1)
+                        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                        if hum and hum.Health > 0 and (v.Position - hrp.Position).Magnitude < 500 then
+                            hrp.CFrame = v.CFrame + Vector3.new(0, 3, 0)
+                            firetouchinterest(hrp, v, 0)
+                            firetouchinterest(hrp, v, 1)
+                        end
                         break
                     end
                 end
@@ -454,14 +456,17 @@ createToggle(ColLeft, "Tự Cướp Trứng Đã Chọn", function(state)
     _G.AutoSelectedEggs = state
     task.spawn(function()
         while _G.AutoSelectedEggs do
-            task.wait(0.25)
+            task.wait(0.4)
             pcall(function()
                 for _, v in pairs(workspace:GetDescendants()) do
                     if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                         local hrp = LocalPlayer.Character.HumanoidRootPart
-                        hrp.CFrame = v.CFrame + Vector3.new(0, 3, 0)
-                        firetouchinterest(hrp, v, 0)
-                        firetouchinterest(hrp, v, 1)
+                        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                        if hum and hum.Health > 0 and (v.Position - hrp.Position).Magnitude < 500 then
+                            hrp.CFrame = v.CFrame + Vector3.new(0, 3, 0)
+                            firetouchinterest(hrp, v, 0)
+                            firetouchinterest(hrp, v, 1)
+                        end
                     end
                 end
             end)
@@ -473,7 +478,7 @@ createToggle(ColLeft, "Tự Cướp Tất Cả Trứng", function(state)
     _G.AutoAllEggs = state
     task.spawn(function()
         while _G.AutoAllEggs do
-            task.wait(0.2)
+            task.wait(0.3)
             pcall(function()
                 for _, v in pairs(workspace:GetDescendants()) do
                     if v.Name:lower():find("egg") and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -490,7 +495,7 @@ end)
 createDropdown(ColLeft, "Target Priority", {"Độ Hiếm Cao Nhất", "Giá Trị Cao Nhất", "Gần Nhất", "Secret", "Extreme"}, function(val) _G.Priority = val end)
 createDropdown(ColLeft, "Chế Độ Di Chuyển", {"Mặc Định (Original)", "Instant", "Smooth Tween"}, function(val) _G.MoveMode = val end)
 
--- CỘT PHẢI FARM TAB (BỘ LỌC CƯỚP)
+-- CỘT PHẢI FARM TAB
 local FilterTitle = Instance.new("TextLabel")
 FilterTitle.Size = UDim2.new(1, -5, 0, 26)
 FilterTitle.BackgroundTransparency = 1
@@ -532,7 +537,7 @@ Instance.new("UICorner", IncomeInput).CornerRadius = UDim.new(0, 4)
 createDropdown(ColRight, "Độ Hiếm Tối Thiểu", {"Chọn...", "Thánh Thần", "Huyền Thoại", "Sử Thi"}, function(val) _G.MinRarity = val end)
 createDropdown(ColRight, "Độ Hiếm Chính Xác", {"Chọn...", "Secret", "Extreme", "Divine"}, function(val) _G.ExactRarity = val end)
 
--- TAB 2 (⚙️ / EXTRA): TẤT CẢ TÍNH NĂNG NÂNG CAO (HALLOWEEN, KẺO, TÀU, BỌC MÁY, V.V.)
+-- TAB 2 (EXTRA)
 createToggle(ExtraTab, "Tự Động Vào Máy Trên Bục", function(state)
     _G.AutoPodium = state
     task.spawn(function()
@@ -541,5 +546,4 @@ createToggle(ExtraTab, "Tự Động Vào Máy Trên Bục", function(state)
             pcall(function()
                 for _, v in pairs(workspace:GetDescendants()) do
                     if (v.Name:lower():find("podium") or v.Name:lower():find("buc") or v.Name:lower():find("may")) and v:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local prompt = v:FindFirstChildWhichIsA("ProximityPrompt", true)
-  
+        
